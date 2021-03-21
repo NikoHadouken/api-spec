@@ -35,7 +35,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: 'common.yaml#/components/schemas/error'
+                $ref: 'https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/error'
 
   /registrations:
     post:
@@ -80,9 +80,9 @@ components:
           type: string
           example: Catering
         price:
-          $ref: 'common.yaml#/components/schemas/money'
+          $ref: 'https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/money'
         vat_rate:
-          $ref: 'common.yaml#/components/schemas/vat_rate'
+          $ref: 'https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/vat_rate'
       required:
         - name
         - price
@@ -195,7 +195,7 @@ components:
           type: string
           example: '(+49) 0555 1234 1234'
         billing_address:
-          $ref: common.yaml#/components/schemas/address
+          $ref: https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/address
         status:
           $ref: '#/components/schemas/registration_status'
         message:
@@ -275,7 +275,7 @@ components:
           type: string
           example: '(+49) 0555 1234 1234'
         address:
-          $ref: common.yaml#/components/schemas/address
+          $ref: https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/address
       required:
         - id
         - first_name
@@ -299,7 +299,7 @@ components:
           type: string
           example: '(+49) 0555 1234 1234'
         address:
-          $ref: common.yaml#/components/schemas/address
+          $ref: https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/address
       required:
         - first_name
         - last_name
@@ -322,4 +322,4 @@ components:
           type: string
           example: '(+49) 0555 1234 1234'
         address:
-          $ref: common.yaml#/components/schemas/address
+          $ref: https://nikohadouken.github.io/api-spec/common.yaml#/components/schemas/address

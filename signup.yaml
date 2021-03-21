@@ -1,0 +1,81 @@
+openapi: 3.0.0
+
+info:
+  title: Storl Academy
+  version: 0.0.1-draft
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/Hadouken-Test/Academy/1.0.0
+  - description: Development
+    url: "/"
+
+paths:
+  /registrations:
+    post:
+      summary: Adding a registration
+      description: Adds a registration to the system
+      operationId: addReg
+      requestBody:
+        description: new Registrtion
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/registration_form"
+      responses:
+        "200":
+          description: registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/registration"
+        "400":
+          description: invalid request format
+        "422":
+          description: data validation failed
+
+components:
+  schemas:
+    registration:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        billing_address:
+          $ref: common.yaml#/components/schemas/address
+      required:
+        - id
+        - first_name
+        - last_name
+        - email
+
+    registration_form:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+      required:
+        - first_name
+        - last_name
+        - email

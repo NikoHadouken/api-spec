@@ -9,14 +9,52 @@ servers:
     url: '/'
 
 paths:
-  /:
-    get:
-      summary: get index
+  /courses:
+    post:
+      summary: Adding a course
+      description: Adds a new course to the system
+      operationId: addCourse
+      requestBody:
+        description: course data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_form'
       responses:
-        "200":
-          description: OK
-  /academy-signup/v1/:
-    $ref: 'academy_signup.yaml#/paths/academy-signup'
+        '200':
+          description: course created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/course'
+        '422':
+          description: data validation failed
+            application/json:
+              schema:
+                $ref: 'common.yaml#/components/schemas/error'
+
+  /registrations:
+    post:
+      summary: Adding a registration
+      description: Adds a registration to the system
+      operationId: addReg
+      requestBody:
+        description: new registrtion
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_form'
+      responses:
+        '200':
+          description: registration created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration'
+        '400':
+          description: invalid request format
+        '422':
+          description: data validation failed
             
 components:
   schemas:

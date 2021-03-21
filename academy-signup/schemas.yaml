@@ -1,0 +1,344 @@
+address:
+  type: object
+  properties:
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    company_name:
+      type: string
+      example: Acme Inc.
+    country:
+      $ref: '#/components/schemas/country_code'
+    city:
+      type: string
+      example: Berlin
+    postcode:
+      type: string
+      example: '12305'
+    address_1:
+      type: string
+      example: Bahnhofstr. 51/2a
+    address_2:
+      type: string
+    address_3:
+      type: string
+  required:
+    - first_name
+    - last_name
+    - country
+    - city
+    - postcode
+    - address_1
+
+country_code:
+  type: string
+  enum: ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV', 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO', 'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU', 'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'TP', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ', 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE', 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU', 'GT', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA', 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ', 'IE', 'IL', 'IT', 'JM', 'JP', 'JO', 'KZ', 'KE', 'KI', 'KP', 'KR', 'KV', 'KW', 'KG', 'LA', 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU', 'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT', 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD', 'MC', 'MN', 'MS', 'ME', 'MA', 'MZ', 'MM', 'NA', 'NR', 'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG', 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS', 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT', 'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN', 'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN', 'RS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO', 'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ', 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC', 'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY', 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH', 'YE', 'ZM', 'ZW']
+  example: DE
+
+money:
+  type: object
+  properties:
+    amount:
+      type: integer
+      example: 100
+    currency:
+      $ref: '#/components/schemas/currency_code'
+  required:
+    - amount
+    - currency
+
+currency_code:
+  type: string
+  enum: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY', 'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYI', 'UYU', 'UYW', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'XSU', 'YER', 'ZAR', 'ZMW', 'ZWL']
+  example: 'EUR'
+
+vat_rate:
+  type: string
+  pattern: '^(100|\d{1,2})(\.\d{1,4})?'
+  example: '19.00'
+
+error:
+  type: object
+  properties:
+    code:
+      type: integer
+      format: int32
+    message:
+      type: string
+    errors:
+      type: array
+      items:
+        type: object
+        properties:
+          path:
+            type: string
+          message:
+            type: string
+  required:
+    - code
+    - message
+
+# course
+course_id:
+  type: string
+  format: uuid
+  example: d290f1ee-6c54-4b01-90e6-d701748f0851
+
+course_type:
+  type: string
+  enum: ['seminar', 'training_program']
+  example: seminar
+
+course_item:
+  type: object
+  properties:
+    name:
+      type: string
+      example: Catering
+    price:
+      $ref: '#/components/schemas/money'
+    vat_rate:
+      $ref: '#/components/schemas/vat_rate'
+  required:
+    - name
+    - price
+    - vat_rate
+
+course:
+  type: object
+  properties:
+    id:
+      $ref: '#/components/schemas/course_id'
+    name:
+      type: string
+      example: Medicinal Herbs
+    type:
+      $ref: '#/components/schemas/course_type'
+    attendee_capacity:
+      type: integer
+      minimum: 0
+      example: 20
+    date_created:
+      type: string
+      format: date-time
+      example: '2021-01-01T20:15:00+01:00'
+    date_start:
+      type: string
+      format: date-time
+      example: '2021-02-01T20:15:00+01:00'
+    items:
+      oneOf:
+        - type: array
+        - type: object
+      items:
+        $ref: '#/components/schemas/course_item'
+  required:
+    - id
+    - name
+    - type
+    - attendee_capacity
+    - date_created
+    - date_start
+    - items
+
+course_form:
+  type: object
+  properties:
+    name:
+      type: string
+      example: New Course
+    type:
+      $ref: '#/components/schemas/course_type'
+    attendee_capacity:
+      type: integer
+      minimum: 0
+      example: 20
+  required:
+    - name
+    - type
+    - attendee_capacity
+
+course_form_update:
+  type: object
+  properties:
+    name:
+      type: string
+      example: New Course
+    type:
+      $ref: '#/components/schemas/course_type'
+    attendee_capacity:
+      type: integer
+      minimum: 0
+      example: 20
+
+# registration
+registration_id:
+  type: string
+  format: uuid
+  example: d290f1ee-6c54-4b01-90e6-d701748f0851
+
+registration_status:
+  type: string
+  enum: ['pending', 'rejected', 'confirmed', 'cancelled', 'payed', 'refunded']
+  example: pending
+
+registration:
+  type: object
+  properties:
+    id:
+      $ref: '#/components/schemas/registration_id'
+    date_created:
+      type: string
+      format: date-time
+      example: '2021-01-01T20:15:00+01:00'
+    date_modified:
+      type: string
+      format: date-time
+      example: '2021-01-01T20:15:00+01:00'
+    related_registration_id:
+      $ref: '#/components/schemas/registration_id'
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+    phone_number:
+      type: string
+      example: '(+49) 0555 1234 1234'
+    billing_address:
+      $ref: '#/components/schemas/address'
+    status:
+      $ref: '#/components/schemas/registration_status'
+    message:
+      type: string
+    attendees:
+      oneOf:
+        - type: array
+        - type: object
+      items:
+        $ref: '#/components/schemas/attendee'
+  required:
+    - id
+    - date_created
+    - date_modified
+    - first_name
+    - last_name
+    - email
+    - billing_address
+    - status
+    - attendees
+
+registration_form:
+  type: object
+  properties:
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+  required:
+    - first_name
+    - last_name
+    - email
+    - billing_address
+
+registration_form_update:
+  type: object
+  properties:
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+
+# attendee
+attendee_id:
+  type: string
+  format: uuid
+  example: d290f1ee-6c54-4b01-90e6-d701748f0851
+
+attendee:
+  type: object
+  properties:
+    id:
+      $ref: '#/components/schemas/attendee_id'
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+    phone_number:
+      type: string
+      example: '(+49) 0555 1234 1234'
+    address:
+      $ref: '#/components/schemas/address'
+  required:
+    - id
+    - first_name
+    - last_name
+    - email
+
+attendee_form:
+  type: object
+  properties:
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+    phone_number:
+      type: string
+      example: '(+49) 0555 1234 1234'
+    address:
+      $ref: '#/components/schemas/address'
+  required:
+    - first_name
+    - last_name
+    - email
+
+attendee_form_update:
+  type: object
+  properties:
+    first_name:
+      type: string
+      example: John
+    last_name:
+      type: string
+      example: Doe
+    email:
+      type: string
+      format: email
+      example: john.doe@example.com
+    phone_number:
+      type: string
+      example: '(+49) 0555 1234 1234'
+    address:
+      $ref: '#/components/schemas/address'

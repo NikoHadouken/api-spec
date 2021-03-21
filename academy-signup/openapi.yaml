@@ -29,6 +29,7 @@ paths:
                 $ref: '#/components/schemas/course'
         '422':
           description: data validation failed
+          content:
             application/json:
               schema:
                 $ref: 'common.yaml#/components/schemas/error'

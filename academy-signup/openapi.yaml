@@ -5,7 +5,7 @@ info:
   title: Academy Signup X
 
 servers:
-  - description: Development
+  - description: Development Test
     url: '/'
 
 paths:

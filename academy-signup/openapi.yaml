@@ -212,11 +212,11 @@ components:
     error:
       type: object
       properties:
-        code:
+        status:
           type: integer
           format: int32
           example: 401
-        status:
+        name:
           type: string
           example: 'Unauthorized'
         message:
@@ -235,11 +235,11 @@ components:
     validation_error:
       type: object
       properties:
-        code:
+        status:
           type: integer
           format: int32
           example: 422
-        status:
+        name:
           type: string
           example: 'Unprocessable Entity'
         message:

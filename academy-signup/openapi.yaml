@@ -229,7 +229,7 @@ components:
             - type: string
 
       required:
-        - code
+        - status
         - message
         
     validation_error:
@@ -257,8 +257,7 @@ components:
                 type: string
                 example: 'value "Deutschland" is not a valid country code'
       required:
-        - code
-        - message
+        - status
         - errors
 
     # course

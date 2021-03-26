@@ -1,15 +1,13 @@
 openapi: 3.0.0
-
 info:
   version: 0.0.1-draft
   title: Academy Signup
   description: Academy Signup Description
 
 servers:
-  - url: '/'
-  # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/Hadouken-Test/academy_signup/0.0.1-draft
+  - url: '/'
     
 tags:
   - name: course
@@ -20,9 +18,9 @@ tags:
 paths:
   /courses:
     get:
-      summary: Retrieve courses
+      summary: list courses
       description: Get a list of academy courses
-      operationId: listCourses
+      operationId: list_courses
       tags:
         - course
       parameters:
@@ -32,9 +30,9 @@ paths:
         '200':
           $ref: '#/components/responses/course_list'
     post:
-      summary: Adding a course
+      summary: create course
       description: Adds a new course to the system
-      operationId: addCourse
+      operationId: create_course
       tags:
         - course
       requestBody:
@@ -49,22 +47,24 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
 
-  /courses/{id}:
+  /courses/{course_id}:
     get:
-      summary: Retrieve a course
+      summary: get course
       description: Retrieve a course via it's id
-      operationId: getCourse
+      operationId: get_course
       tags:
         - course
+      parameters:
+        - $ref: '#/components/parameters/course_id'
       responses:
         '200':
           $ref: '#/components/responses/course'
         '404':
           $ref: '#/components/responses/not_found'
     patch:
-      summary: update a course
+      summary: update course
       description: apply changes to a course
-      operationId: updateCourse
+      operationId: update_course
       parameters:
         - $ref: '#/components/parameters/course_id'
       tags:
@@ -83,9 +83,9 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
     delete:
-      summary: delete a course
-      description: Permamently delete a course
-      operationId: deleteCourse
+      summary: delete course
+      description: permanently delete a course
+      operationId: delete_course
       parameters:
         - $ref: '#/components/parameters/course_id'
       tags:
@@ -98,9 +98,9 @@ paths:
           
   /registrations:
     get:
-      summary: Retrieve registrations
+      summary: list registrations
       description: Get a list of academy registrations
-      operationId: listRegs
+      operationId: list_registrations
       tags:
         - registration
       parameters:
@@ -110,13 +110,13 @@ paths:
         '200':
           $ref: '#/components/responses/registration_list'
     post:
-      summary: Adding a registration
+      summary: create registration
       description: Adds a registration to the system
-      operationId: addReg
+      operationId: create_registration
       tags:
         - registration
       requestBody:
-        description: new registration
+        description: fields for a new registration
         content:
           application/json:
             schema:
@@ -126,7 +126,56 @@ paths:
           $ref: '#/components/responses/registration'
         '422':
           $ref: '#/components/responses/validation_error'
-            
+
+  /registrations/{registration_id}:
+    get:
+      summary: get registration
+      description: Retrieve a registration via it's id
+      operationId: get_registration
+      tags:
+        - registration
+      parameters:
+        - $ref: '#/components/parameters/registration_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/not_found'
+    patch:
+      summary: update registration
+      description: apply changes to a registration
+      operationId: update_registration
+      parameters:
+        - $ref: '#/components/parameters/registration_id'
+      tags:
+        - registration
+      requestBody:
+        description: registration data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_form_update'
+      responses:
+        '200':
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/not_found'
+        '422':
+          $ref: '#/components/responses/validation_error'
+    delete:
+      summary: delete registration
+      description: permanently delete a registration
+      operationId: delete_registration
+      parameters:
+        - $ref: '#/components/parameters/registration_id'
+      tags:
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/not_found'
+
 components:
   parameters:
     page:
@@ -172,6 +221,10 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/error'
+          example:
+            status: 404
+            name: 'Not Found'
+            message: 'Entity was not found'
     validation_error:
       description: error - invalid data
       content:

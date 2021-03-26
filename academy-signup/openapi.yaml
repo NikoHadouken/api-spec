@@ -216,7 +216,7 @@ components:
 
   responses:
     not_found:
-      description: item was not found
+      description: 'error: not found'
       content:
         application/json:
           schema:
@@ -226,7 +226,7 @@ components:
             name: 'Not Found'
             message: 'Entity was not found'
     validation_error:
-      description: error - invalid data
+      description: 'error: invalid data'
       content:
         application/json:
           schema:

@@ -47,15 +47,20 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
 
-  /courses/{course_id}:
+  /courses/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
     get:
       summary: get course
       description: Retrieve a course via it's id
       operationId: get_course
       tags:
         - course
-      parameters:
-        - $ref: '#/components/parameters/course_id'
       responses:
         '200':
           $ref: '#/components/responses/course'
@@ -65,8 +70,6 @@ paths:
       summary: update course
       description: apply changes to a course
       operationId: update_course
-      parameters:
-        - $ref: '#/components/parameters/course_id'
       tags:
         - course
       requestBody:
@@ -86,8 +89,6 @@ paths:
       summary: delete course
       description: permanently delete a course
       operationId: delete_course
-      parameters:
-        - $ref: '#/components/parameters/course_id'
       tags:
         - course
       responses:
@@ -127,15 +128,20 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
 
-  /registrations/{registration_id}:
+  /registrations/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the registration
     get:
       summary: get registration
       description: Retrieve a registration via it's id
       operationId: get_registration
       tags:
         - registration
-      parameters:
-        - $ref: '#/components/parameters/registration_id'
       responses:
         '200':
           $ref: '#/components/responses/registration'
@@ -145,8 +151,6 @@ paths:
       summary: update registration
       description: apply changes to a registration
       operationId: update_registration
-      parameters:
-        - $ref: '#/components/parameters/registration_id'
       tags:
         - registration
       requestBody:
@@ -166,8 +170,6 @@ paths:
       summary: delete registration
       description: permanently delete a registration
       operationId: delete_registration
-      parameters:
-        - $ref: '#/components/parameters/registration_id'
       tags:
         - registration
       responses:
@@ -197,20 +199,6 @@ components:
         default: 20
       required: false
       description: Number of items to retrieve per page
-    course_id:
-      in: path
-      name: course_id
-      schema:
-        $ref: '#/components/schemas/course_id'
-      required: true
-      description: Id of the course
-    registration_id:
-      in: path
-      name: registration_id
-      schema:
-        $ref: '#/components/schemas/registration_id'
-      required: true
-      description: Id of the registration
 
   # requestBodies:
 

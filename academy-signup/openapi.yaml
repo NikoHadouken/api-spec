@@ -49,6 +49,53 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
 
+  /courses/{id}:
+    get:
+      summary: Retrieve a course
+      description: Retrieve a course via it's id
+      operationId: getCourse
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/not_found'
+    patch:
+      summary: update a course
+      description: apply changes to a course
+      operationId: updateCourse
+      parameters:
+        - $ref: '#/components/parameters/course_id'
+      tags:
+        - course
+      requestBody:
+        description: course data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_form_update'
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/not_found'
+        '422':
+          $ref: '#/components/responses/validation_error'
+    delete:
+      summary: delete a course
+      description: Permamently delete a course
+      operationId: deleteCourse
+      parameters:
+        - $ref: '#/components/parameters/course_id'
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/not_found'
+          
   /registrations:
     get:
       summary: Retrieve registrations
@@ -101,15 +148,30 @@ components:
         default: 20
       required: false
       description: Number of items to retrieve per page
+    course_id:
+      in: path
+      name: course_id
+      schema:
+        $ref: '#/components/schemas/course_id'
+      required: true
+      description: Id of the course
+    registration_id:
+      in: path
+      name: registration_id
+      schema:
+        $ref: '#/components/schemas/registration_id'
+      required: true
+      description: Id of the registration
 
-  requestBodies:
-    registration:
-      description: data to create a new registration
+  # requestBodies:
+
+  responses:
+    not_found:
+      description: item was not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/registration_form'
-  responses:
+            $ref: '#/components/schemas/error'
     validation_error:
       description: error - invalid data
       content:

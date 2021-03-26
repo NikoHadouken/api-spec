@@ -44,7 +44,7 @@ paths:
             schema:
               $ref: '#/components/schemas/course_form'
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/course'
         '422':
           $ref: '#/components/responses/validation_error'
@@ -75,7 +75,7 @@ paths:
             schema:
               $ref: '#/components/schemas/registration_form'
       responses:
-        '200':
+        '201':
           $ref: '#/components/responses/registration'
         '422':
           $ref: '#/components/responses/validation_error'

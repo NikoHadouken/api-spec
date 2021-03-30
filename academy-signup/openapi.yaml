@@ -24,7 +24,7 @@ tags:
     description: Everything about attendees of an academy course/registration
 
 paths:
-  # courses
+  # course paths
   /courses:
     get:
       summary: list courses
@@ -106,7 +106,65 @@ paths:
         '404':
           $ref: '#/components/responses/not_found'
 
-  # registrations
+  /courses/{id}/expenses:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+    post:
+      summary: create course expense
+      description: Adds an expnse item to the course
+      operationId: create_course_expense
+      tags:
+        - course
+      requestBody:
+        description: course expense data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_expense_form'
+      responses:
+        '201':
+          $ref: '#/components/responses/course'
+        '422':
+          $ref: '#/components/responses/validation_error'
+
+  /courses/{id}/expenses/{key}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+      - in: path
+        name: key
+        schema:
+          $ref: '#/components/schemas/course_expense_id'
+        required: true
+        description: Id of the expense item
+    patch:
+      summary: update course expense
+      description: Updates course expense item
+      operationId: update_course_expense
+      tags:
+        - course
+      requestBody:
+        description: course expense data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_expense_form_update'
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '422':
+          $ref: '#/components/responses/validation_error'
+
+  # registration paths
   /registrations:
     get:
       summary: list registrations
@@ -177,8 +235,10 @@ paths:
         '422':
           $ref: '#/components/responses/validation_error'
     delete:
+      parameters:
+        - $ref: '#/components/parameters/hard_delete'
       summary: delete registration
-      description: permanently delete a registration
+      description: perform a soft-delete on a registration, or hard delete if parameter is set
       operationId: delete_registration
       tags:
         - registration
@@ -228,8 +288,22 @@ paths:
           $ref: '#/components/responses/not_found'
         '409':
           $ref: '#/components/responses/conflict'
+  
+  /registrations/trashed:
+    get:
+      summary: get trashed registrations
+      description: Retrieve registrations that got soft-deleted
+      operationId: list_trashed_registrations
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+      tags:
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/registration_list'
 
-  /registrations/{id}/trash:
+  /registrations/trashed/{id}:
     parameters:
       - in: path
         name: id
@@ -237,10 +311,10 @@ paths:
           $ref: '#/components/schemas/registration_id'
         required: true
         description: Id of the registration
-    put:
-      summary: trash registration
-      description: Perform a soft-delete on a registration
-      operationId: trash_registration
+    patch:
+      summary: recover trashed registrations
+      description: Retrieve registrations that got soft-deleted
+      operationId: recover_trashed_registration
       tags:
         - registration
       responses:
@@ -248,21 +322,19 @@ paths:
           $ref: '#/components/responses/registration'
         '404':
           $ref: '#/components/responses/not_found'
-        '409':
-          $ref: '#/components/responses/conflict'
-  
-  /registrations/trash:
-    get:
-      summary: get trashed registrations
-      description: Retrieve registrations that got soft-deleted
-      operationId: list_trashed_registrations
+    delete:
+      summary: delete registration
+      description: permanently delete a trashed registration
+      operationId: delete_trashed_registration
       tags:
         - registration
       responses:
         '200':
-          $ref: '#/components/responses/registration_list'
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/not_found'
 
-  # registration_comments
+  # registration comment paths
   /registration/{id}/comments:
     parameters:
       - in: path
@@ -325,7 +397,7 @@ paths:
         '200':
           $ref: '#/components/responses/registration_comment'
 
-  # attendees
+  # attendee paths
   /attendees:
     get:
       summary: list attendees
@@ -409,11 +481,11 @@ paths:
 
 
 components:
-  securitySchemes:
-    jwt_token:
-      type: http
-      scheme: bearer
-      bearerFormat: jwt
+  # securitySchemes:
+  #   jwt_token:
+  #     type: http
+  #     scheme: bearer
+  #     bearerFormat: jwt
 
   parameters:
     page:
@@ -435,10 +507,19 @@ components:
         default: 20
       required: false
       description: Number of items to retrieve per page
+    hard_delete:
+      in: query
+      name: hard_delete
+      schema:
+        type: boolean
+        default: false
+      required: false
+      description: Put entry in trash or delete permanently if hard_delete is set to true
 
   # requestBodies:
 
   responses:
+    # error responses
     not_found:
       description: 'error: not found'
       content:
@@ -468,6 +549,7 @@ components:
           schema:
             $ref: '#/components/schemas/validation_error'
 
+    # course responses
     course:
       description: course
       content:
@@ -490,6 +572,7 @@ components:
             items:
               $ref: '#/components/schemas/course'
 
+    # registration responses
     registration:
       description: registration
       content:
@@ -533,6 +616,7 @@ components:
             items:
               $ref: '#/components/schemas/registration_comment'
 
+    # attendee responses
     attendee:
       description: attendee
       content:
@@ -620,7 +704,7 @@ components:
         - postcode
         - address_1
   
-    # errors 
+    # error schemas
     error:
       type: object
       properties:
@@ -671,7 +755,7 @@ components:
         - status
         - errors
 
-    # users
+    # user schemas
     user_id:
       type: string
 
@@ -687,7 +771,7 @@ components:
         - id
         - name
 
-    # course
+    # course schemas
     course_id:
       type: string
       pattern: '^[a-fA-F\d]{24}$'
@@ -698,13 +782,16 @@ components:
       enum: ['seminar', 'training_program']
       example: seminar
 
+    course_expense_id:
+      type: string
+      pattern: '^[A-Za-z_][A-Za-z0-9_]*$'
+      example: catering
+
     course_expense:
       type: object
       properties:
-        key:
-          type: string
-          pattern: '^[A-Za-z_][A-Za-z0-9_]*$'
-          example: catering
+        id:
+          $ref: '#/components/schemas/course_expense_id'
         name:
           type: string
           example: Catering
@@ -846,7 +933,7 @@ components:
           format: date-time
           example: '2021-02-01T20:15:00+01:00'
 
-    # registration
+    # registration schemas
     registration_id:
       type: string
       pattern: '^[a-fA-F\d]{24}$'
@@ -957,7 +1044,7 @@ components:
         billing_address:
           $ref: '#/components/schemas/address'
     
-    # registration comments
+    # registration comment schemas
     registration_comment_id:
       type: string
       pattern: '^[a-fA-F\d]{24}$'
@@ -994,7 +1081,7 @@ components:
       required:
         - message
 
-    # attendee
+    # attendee schemas
     attendee_id:
       type: string
       pattern: '^[a-fA-F\d]{24}$'
@@ -1099,6 +1186,7 @@ components:
         address:
           $ref: '#/components/schemas/address'
 
+    # other schemas
     notification_options:
       type: object
       properties:

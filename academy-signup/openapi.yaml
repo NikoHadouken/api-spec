@@ -690,7 +690,7 @@ components:
     # course
     course_id:
       type: string
-      pattern: /^[a-f\d]{24}$/i
+      pattern: '/^[a-f\d]{24}$/i'
       example: 507f1f77bcf86cd799439012
 
     course_type:
@@ -849,7 +849,7 @@ components:
     # registration
     registration_id:
       type: string
-      pattern: /^[a-f\d]{24}$/i
+      pattern: '/^[a-f\d]{24}$/i'
       example: 507f1f77bcf86cd799439011
 
     registration_status:
@@ -960,7 +960,7 @@ components:
     # registration comments
     registration_comment_id:
       type: string
-      pattern: /^[a-f\d]{24}$/i
+      pattern: '/^[a-f\d]{24}$/i'
       example: 507f1f77bcf86cd799439012
 
     registration_comment:
@@ -997,7 +997,7 @@ components:
     # attendee
     attendee_id:
       type: string
-      pattern: /^[a-f\d]{24}$/i
+      pattern: '/^[a-f\d]{24}$/i'
       example: 507f1f77bcf86cd799439011
 
     attendee:

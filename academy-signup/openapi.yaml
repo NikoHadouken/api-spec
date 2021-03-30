@@ -92,6 +92,8 @@ paths:
           $ref: '#/components/responses/course'
         '404':
           $ref: '#/components/responses/not_found'
+        '412':
+          $ref: '#/components/responses/precondition_failed'
         '422':
           $ref: '#/components/responses/validation_error'
     delete:
@@ -161,6 +163,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/course'
+        '412':
+          $ref: '#/components/responses/precondition_failed'
         '422':
           $ref: '#/components/responses/validation_error'
 
@@ -232,6 +236,8 @@ paths:
           $ref: '#/components/responses/registration'
         '404':
           $ref: '#/components/responses/not_found'
+        '412':
+          $ref: '#/components/responses/precondition_failed'
         '422':
           $ref: '#/components/responses/validation_error'
     delete:
@@ -275,12 +281,15 @@ paths:
             schema:
               type: object
               properties:
-                status:
+                _version:
+                  type: number
+                action:
                   $ref: '#/components/schemas/registration_action'
                 options:
                   $ref: '#/components/schemas/notification_options'
               required:
-                - status
+                - _version
+                - action
       responses:
         '200':
           $ref: '#/components/responses/registration'
@@ -288,6 +297,8 @@ paths:
           $ref: '#/components/responses/not_found'
         '409':
           $ref: '#/components/responses/conflict'
+        '412':
+          $ref: '#/components/responses/precondition_failed'
   
   /registrations/trashed:
     get:
@@ -311,6 +322,17 @@ paths:
           $ref: '#/components/schemas/registration_id'
         required: true
         description: Id of the registration
+    get:
+      summary: get registration
+      description: Retrieve a registration via it's id that got trashed
+      operationId: get_trashed_registration
+      tags:
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/not_found'
     patch:
       summary: recover trashed registrations
       description: Retrieve registrations that got soft-deleted
@@ -465,6 +487,8 @@ paths:
           $ref: '#/components/responses/attendee'
         '404':
           $ref: '#/components/responses/not_found'
+        '409':
+          $ref: '#/components/responses/conflict'
         '422':
           $ref: '#/components/responses/validation_error'
     delete:
@@ -540,7 +564,18 @@ components:
           example:
             status: 409
             name: 'Conflict'
-            message: 'Conflicted data'
+            message: 'conflict with the current state of the resource'
+
+    precondition_failed:
+      description: 'error: precondition failed'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            status: 412
+            name: 'Precondition failed'
+            message: 'optimistic currency control prevented update of outdated ressource'
 
     validation_error:
       description: 'error: invalid data'
@@ -823,6 +858,8 @@ components:
     course_expense_form_update:
       type: object
       properties:
+        _version:
+          type: number
         name:
           type: string
           example: Catering
@@ -830,12 +867,16 @@ components:
           $ref: '#/components/schemas/money'
         vat_rate:
           $ref: '#/components/schemas/vat_rate'
+      required:
+        - _version
     
     course:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/course_id'
+        _version:
+          type: number
         name:
           type: string
           example: Medicinal Herbs
@@ -919,6 +960,8 @@ components:
     course_form_update:
       type: object
       properties:
+        _version:
+          type: number
         name:
           type: string
           example: New Course
@@ -932,6 +975,8 @@ components:
           type: string
           format: date-time
           example: '2021-02-01T20:15:00+01:00'
+      required:
+        - _version
 
     # registration schemas
     registration_id:
@@ -954,6 +999,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/registration_id'
+        _version:
+          type: number
         created_at:
           type: string
           format: date-time
@@ -1031,6 +1078,8 @@ components:
     registration_form_update:
       type: object
       properties:
+        _version:
+          type: number
         first_name:
           type: string
           example: John
@@ -1043,6 +1092,8 @@ components:
           example: john.doe@example.com
         billing_address:
           $ref: '#/components/schemas/address'
+      required:
+        - _version
     
     # registration comment schemas
     registration_comment_id:
@@ -1170,6 +1221,8 @@ components:
     attendee_form_update:
       type: object
       properties:
+        _version:
+          type: number
         first_name:
           type: string
           example: John
@@ -1185,6 +1238,8 @@ components:
           example: '(+49) 0555 1234 1234'
         address:
           $ref: '#/components/schemas/address'
+      required:
+        - _version
 
     # other schemas
     notification_options:

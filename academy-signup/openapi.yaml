@@ -54,7 +54,7 @@ paths:
         '201':
           $ref: '#/components/responses/course'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
 
   /courses/{id}:
     parameters:
@@ -74,7 +74,7 @@ paths:
         '200':
           $ref: '#/components/responses/course'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
     patch:
       summary: update course
       description: apply changes to a course
@@ -91,11 +91,11 @@ paths:
         '200':
           $ref: '#/components/responses/course'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
         '412':
-          $ref: '#/components/responses/precondition_failed'
+          $ref: '#/components/responses/error_concurrency'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
     delete:
       summary: delete course
       description: permanently delete a course
@@ -106,7 +106,7 @@ paths:
         '200':
           $ref: '#/components/responses/course'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
 
   /courses/{id}/expenses:
     parameters:
@@ -132,7 +132,7 @@ paths:
         '201':
           $ref: '#/components/responses/course'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
 
   /courses/{id}/expenses/{key}:
     parameters:
@@ -164,9 +164,9 @@ paths:
         '200':
           $ref: '#/components/responses/course'
         '412':
-          $ref: '#/components/responses/precondition_failed'
+          $ref: '#/components/responses/error_concurrency'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
 
   # registration paths
   /registrations:
@@ -198,7 +198,7 @@ paths:
         '201':
           $ref: '#/components/responses/registration'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
 
   /registrations/{id}:
     parameters:
@@ -218,7 +218,7 @@ paths:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
     patch:
       summary: update registration
       description: apply changes to a registration
@@ -235,15 +235,15 @@ paths:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
         '412':
-          $ref: '#/components/responses/precondition_failed'
+          $ref: '#/components/responses/error_concurrency'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
     delete:
       parameters:
         - $ref: '#/components/parameters/hard_delete'
-      summary: delete registration
+      summary: trash or permanently delete registration
       description: perform a soft-delete on a registration, or hard delete if parameter is set
       operationId: delete_registration
       tags:
@@ -252,7 +252,7 @@ paths:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
 
   /registrations/{id}/actions:
     parameters:
@@ -279,26 +279,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                _version:
-                  type: number
-                action:
-                  $ref: '#/components/schemas/registration_action'
-                options:
-                  $ref: '#/components/schemas/notification_options'
-              required:
-                - _version
-                - action
+              $ref: '#/components/schemas/registration_action_params'
       responses:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
         '409':
-          $ref: '#/components/responses/conflict'
+          $ref: '#/components/responses/error_conflict'
         '412':
-          $ref: '#/components/responses/precondition_failed'
+          $ref: '#/components/responses/error_concurrency'
+        '422':
+          $ref: '#/components/responses/error_validation_failed'
   
   /registrations/trashed:
     get:
@@ -323,7 +315,7 @@ paths:
         required: true
         description: Id of the registration
     get:
-      summary: get registration
+      summary: get trashed registration
       description: Retrieve a registration via it's id that got trashed
       operationId: get_trashed_registration
       tags:
@@ -332,20 +324,20 @@ paths:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
     patch:
-      summary: recover trashed registrations
-      description: Retrieve registrations that got soft-deleted
-      operationId: recover_trashed_registration
+      summary: restore trashed registrations
+      description: Restore registrations that got soft-deleted
+      operationId: restore_trashed_registration
       tags:
         - registration
       responses:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
     delete:
-      summary: delete registration
+      summary: permanently delete registration
       description: permanently delete a trashed registration
       operationId: delete_trashed_registration
       tags:
@@ -354,7 +346,7 @@ paths:
         '200':
           $ref: '#/components/responses/registration'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
 
   # registration comment paths
   /registration/{id}/comments:
@@ -393,7 +385,7 @@ paths:
         '201':
           $ref: '#/components/responses/registration'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
   
   /registration/{id}/comments/{comment_id}:
     parameters:
@@ -449,7 +441,7 @@ paths:
         '201':
           $ref: '#/components/responses/attendee'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
 
   /attendees/{id}:
     parameters:
@@ -469,7 +461,7 @@ paths:
         '200':
           $ref: '#/components/responses/attendee'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
     patch:
       summary: update attendee
       description: apply changes to an attendee
@@ -486,11 +478,11 @@ paths:
         '200':
           $ref: '#/components/responses/attendee'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
         '409':
-          $ref: '#/components/responses/conflict'
+          $ref: '#/components/responses/error_conflict'
         '422':
-          $ref: '#/components/responses/validation_error'
+          $ref: '#/components/responses/error_validation_failed'
     delete:
       summary: delete attendee
       description: permanently delete a attendee
@@ -501,7 +493,7 @@ paths:
         '200':
           $ref: '#/components/responses/attendee'
         '404':
-          $ref: '#/components/responses/not_found'
+          $ref: '#/components/responses/error_not_found'
 
 
 components:
@@ -515,74 +507,74 @@ components:
     page:
       in: query
       name: page
+      description: page to retrieve
       schema:
         type: integer
         minimum: 1
         default: 1
       required: false
-      description: Number of the page
     per_page:
       in: query
       name: per_page
+      description: 'num of entries per page'
       schema:
         type: integer
         minimum: 1
         maximum: 100
         default: 20
       required: false
-      description: Number of items to retrieve per page
     hard_delete:
       in: query
       name: hard_delete
+      description: force permanent delete instead of moving to trash
       schema:
         type: boolean
         default: false
       required: false
-      description: Put entry in trash or delete permanently if hard_delete is set to true
 
   # requestBodies:
 
   responses:
     # error responses
-    not_found:
+    error_not_found:
       description: 'error: not found'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
+            $ref: '#/components/schemas/http_error'
           example:
             status: 404
             name: 'Not Found'
             message: 'Entity was not found'
 
-    conflict:
+    error_conflict:
       description: 'error: conflict'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
+            $ref: '#/components/schemas/http_error'
           example:
             status: 409
-            name: 'Conflict'
+            name: 'error_conflict'
             message: 'conflict with the current state of the resource'
 
-    precondition_failed:
-      description: 'error: precondition failed'
+    error_concurrency:
+      description: 'error: concurrency'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/error'
+            $ref: '#/components/schemas/http_error'
           example:
             status: 412
             name: 'Precondition failed'
             message: 'optimistic currency control prevented update of outdated ressource'
 
-    validation_error:
-      description: 'error: invalid data'
+    error_validation_failed:
+      description: 'error: validation failed'
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/validation_error'
+            $ref: '#/components/schemas/http_error_validation_failed'
 
     # course responses
     course:
@@ -673,7 +665,6 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/attendee'
-    
 
   schemas:
     # value objects
@@ -740,7 +731,7 @@ components:
         - address_1
   
     # error schemas
-    error:
+    http_error:
       type: object
       properties:
         status:
@@ -756,13 +747,12 @@ components:
         data:
           oneOf:
             - type: object
-            - type: array
             - type: string
       required:
         - status
         - message
         
-    validation_error:
+    http_error_validation_failed:
       type: object
       properties:
         status:
@@ -775,20 +765,23 @@ components:
         message:
           type: string
           example: 'invalid request data'
-        errors:
+        validation_errors:
           type: array
           items:
-            type: object
-            properties:
-              path:
-                type: string
-                example: 'address.country'
-              message:
-                type: string
-                example: 'value "Deutschland" is not a valid country code'
+            $ref: '#/components/schemas/validation_error'
       required:
         - status
-        - errors
+        - validation_errors
+
+    validation_error:
+      type: object
+      properties:
+        path:
+          type: string
+          example: 'address.country'
+        message:
+          type: string
+          example: 'value "Deutschland" is not a valid country code'
 
     # user schemas
     user_id:
@@ -887,9 +880,7 @@ components:
           minimum: 0
           example: 20
         attendee_counts:
-          oneOf:
-            - type: array
-            - type: object
+          type: array
           items:
             type: object
             properties:
@@ -921,7 +912,7 @@ components:
           format: date-time
           example: '2021-02-01T20:15:00+01:00'
         expenses:
-          type: object
+          type: array
           items:
             $ref: '#/components/schemas/course_expense'
       required:
@@ -994,6 +985,19 @@ components:
       enum: ['undo', 'confirm', 'reject', 'cancel', 'pay', 'refund']
       example: confirm
 
+    registration_action_params:
+      type: object
+      properties:
+        _version:
+          type: number
+        action:
+          $ref: '#/components/schemas/registration_action'
+        notification_options:
+          $ref: '#/components/schemas/notification_options'
+      required:
+        - _version
+        - action
+
     registration:
       type: object
       properties:
@@ -1033,9 +1037,7 @@ components:
         message:
           type: string
         attendees:
-          oneOf:
-            - type: array
-            - type: object
+          type: array
           items:
             $ref: '#/components/schemas/attendee'
         recent_comments:
@@ -1245,7 +1247,7 @@ components:
     notification_options:
       type: object
       properties:
-        enable_notification:
+        enabled:
           type: boolean
           example: true
         message:

@@ -97,9 +97,67 @@ paths:
         '422':
           $ref: '#/components/responses/error_validation_failed'
     delete:
-      summary: delete course
-      description: permanently delete a course
+      parameters:
+        - $ref: '#/components/parameters/hard_delete'
+      summary: trash or permanently delete course
+      description: perform a soft-delete on a course, or hard delete if parameter is set
       operationId: delete_course
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
+
+  /courses/trashed:
+    get:
+      summary: get trashed courses
+      description: Retrieve courses that got soft-deleted
+      operationId: list_trashed_courses
+      parameters:
+        - $ref: '#/components/parameters/page'
+        - $ref: '#/components/parameters/per_page'
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course_list'
+
+  /courses/trashed/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+    get:
+      summary: get trashed course
+      description: Retrieve a course via it's id that got trashed
+      operationId: get_trashed_course
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
+    patch:
+      summary: restore trashed courses
+      description: Restore courses that got soft-deleted
+      operationId: restore_trashed_course
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
+    delete:
+      summary: permanently delete course
+      description: permanently delete a trashed course
+      operationId: delete_trashed_course
       tags:
         - course
       responses:
@@ -118,7 +176,7 @@ paths:
         description: Id of the course
     post:
       summary: create course expense
-      description: Adds an expnse item to the course
+      description: Adds an expense item to the course
       operationId: create_course_expense
       tags:
         - course
@@ -167,6 +225,17 @@ paths:
           $ref: '#/components/responses/error_concurrency'
         '422':
           $ref: '#/components/responses/error_validation_failed'
+    delete:
+      summary: permanently delete course expense
+      description: permanently delete a course expense
+      operationId: delete_course_expense
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
 
   # registration paths
   /registrations:

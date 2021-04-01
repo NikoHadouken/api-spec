@@ -748,10 +748,8 @@ components:
         message:
           type: string
           example: 'Token expired'
-        data:
-          oneOf:
-            - type: object
-            - type: string
+        # data:
+        #   type: object
       required:
         - status
         - message
@@ -907,7 +905,7 @@ components:
           type: string
           format: date-time
           example: '2021-01-01T20:15:00+01:00'
-        modified_at:
+        updated_at:
           type: string
           format: date-time
           example: '2021-01-01T20:15:00+01:00'
@@ -926,7 +924,7 @@ components:
         - attendee_capacity
         - attendee_counts
         - created_at
-        - modified_at
+        - updated_at
         - starting_date
         - expenses
     
@@ -1013,7 +1011,7 @@ components:
           type: string
           format: date-time
           example: '2021-01-01T20:15:00+01:00'
-        modified_at:
+        updated_at:
           type: string
           format: date-time
           example: '2021-01-01T20:15:00+01:00'
@@ -1051,7 +1049,7 @@ components:
       required:
         - id
         - created_at
-        - modified_at
+        - updated_at
         - first_name
         - last_name
         - email

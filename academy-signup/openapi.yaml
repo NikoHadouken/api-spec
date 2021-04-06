@@ -189,6 +189,8 @@ paths:
       responses:
         '201':
           $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
         '422':
           $ref: '#/components/responses/error_validation_failed'
 
@@ -221,6 +223,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/course'
+        '404':
+          $ref: '#/components/responses/error_not_found'
         '412':
           $ref: '#/components/responses/error_concurrency'
         '422':
@@ -229,6 +233,8 @@ paths:
       summary: permanently delete course expense
       description: permanently delete a course expense
       operationId: delete_course_expense
+      parameters:
+        - $ref: '#/components/parameters/version'
       tags:
         - course
       responses:
@@ -600,6 +606,13 @@ components:
         type: boolean
         default: false
       required: false
+    version:
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/record_version'
+        required: true
+        description: entity version for concurrency control
 
   # requestBodies:
 
@@ -907,6 +920,9 @@ components:
     course_expense_form:
       type: object
       properties:
+        _version:
+          $ref: '#/components/schemas/record_version'
+          description: version of the course to update
         name:
           type: string
           example: Catering
@@ -915,6 +931,7 @@ components:
         vat_rate:
           $ref: '#/components/schemas/vat_rate'
       required:
+        - _version
         - name
         - price
         - vat_rate
@@ -924,6 +941,7 @@ components:
       properties:
         _version:
           $ref: '#/components/schemas/record_version'
+          description: version of the course to update
         name:
           type: string
           example: Catering

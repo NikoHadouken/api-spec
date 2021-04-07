@@ -1123,7 +1123,7 @@ components:
           $ref: '#/components/schemas/address'
         status:
           $ref: '#/components/schemas/registration_status'
-        message:
+        note:
           type: string
         attendees:
           type: array
@@ -1158,6 +1158,8 @@ components:
           type: string
           format: email
           example: john.doe@example.com
+        note:
+          type: string
         billing_address:
           $ref: '#/components/schemas/address'
       required:
@@ -1181,6 +1183,8 @@ components:
           type: string
           format: email
           example: john.doe@example.com
+        note:
+          type: string
         billing_address:
           $ref: '#/components/schemas/address'
       required:

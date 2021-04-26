@@ -237,8 +237,6 @@ paths:
       summary: permanently delete course expense
       description: permanently delete a course expense
       operationId: delete_course_expense
-      parameters:
-        - $ref: '#/components/parameters/version'
       tags:
         - course
       responses:

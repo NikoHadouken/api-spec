@@ -862,7 +862,7 @@ components:
     # user schemas
     user_id:
       type: string
-      example: 1
+      example: '1'
 
     user_subset:
       type: object
@@ -878,7 +878,7 @@ components:
 
     # course schemas
     course_id:
-      type: string
+      type: integer
       example: 1
 
     course_type:
@@ -890,17 +890,17 @@ components:
       type: object
       properties:
         pending:
-          type: string
+          type: integer
         rejected:
-          type: string
+          type: integer
         confirmed:
-          type: string
+          type: integer
         cancelled:
-          type: string
+          type: integer
         payed:
-          type: string
+          type: integer
         refunded:
-          type: string
+          type: integer
       example: 
         pending: 22
         rejected: 2
@@ -910,7 +910,7 @@ components:
         refunded: 0
 
     course_expense_id:
-      type: string
+      type: integer
       example: 1
 
     course_expense:
@@ -1055,7 +1055,7 @@ components:
 
     # registration schemas
     registration_id:
-      type: string
+      type: integer
       example: 1
 
     registration_status:
@@ -1184,7 +1184,7 @@ components:
     
     # registration comment schemas
     registration_comment_id:
-      type: string
+      type: integer
       example: 1
 
     registration_comment:
@@ -1220,7 +1220,7 @@ components:
 
     # attendee schemas
     attendee_id:
-      type: string
+      type: integer
       example: 1
 
     attendee:
@@ -1313,14 +1313,14 @@ components:
       type: object
       properties:
         itemsTotal:
-          type: number
+          type: integer
           example: 82
         pagesTotal:
-          type: number
+          type: integer
           example: 5
         page:
-          type: number
+          type: integer
           example: 1
         perPage:
-          type: number
+          type: integer
           example: 20

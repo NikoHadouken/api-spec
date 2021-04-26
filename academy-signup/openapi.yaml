@@ -934,9 +934,6 @@ components:
     create_course_expense_dto:
       type: object
       properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-          description: version of the course to update
         name:
           type: string
           example: Catering
@@ -945,7 +942,6 @@ components:
         vatRate:
           $ref: '#/components/schemas/vat_rate'
       required:
-        - _version
         - name
         - price
         - vatRate
@@ -955,7 +951,7 @@ components:
       properties:
         _version:
           $ref: '#/components/schemas/record_version'
-          description: version of the course to update
+          description: version of the course expense to update
         name:
           type: string
           example: Catering
@@ -1073,13 +1069,10 @@ components:
       properties:
         _version:
           $ref: '#/components/schemas/record_version'
-        action:
-          $ref: '#/components/schemas/registration_action'
         notification_options:
           $ref: '#/components/schemas/notification_options'
       required:
         - _version
-        - action
 
     registration:
       type: object

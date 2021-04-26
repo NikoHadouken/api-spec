@@ -886,6 +886,29 @@ components:
       enum: ['seminar', 'training_program']
       example: seminar
 
+    attendee_counts:
+      type: object
+      properties:
+        pending:
+          type: string
+        rejected:
+          type: string
+        confirmed:
+          type: string
+        cancelled:
+          type: string
+        payed:
+          type: string
+        refunded:
+          type: string
+      example: 
+        pending: 22
+        rejected: 2
+        confirmed: 0
+        cancelled: 0
+        payed: 0
+        refunded: 0
+
     course_expense_id:
       type: string
       example: 1
@@ -960,25 +983,7 @@ components:
           minimum: 0
           example: 20
         attendeeCounts:
-          type: array
-          items:
-            type: object
-            properties:
-              status:
-                $ref: '#/components/schemas/registration_status'
-              count:
-                type: integer
-                minimum: 0
-            required:
-              - status
-              - count
-          example:  
-            - status: 'pending'
-              count: 52
-            - status: 'confirmed'
-              count: 15
-            - status: 'payed'
-              count: 6
+          $ref: '#/components/schemas/attendee_counts'
         createdAt:
           type: string
           format: date-time
@@ -999,10 +1004,10 @@ components:
         - id
         - name
         - type
-        - attendee_capacity
-        - created_at
-        - updated_at
-        - starting_date
+        - attendeeCapacity
+        - createdAt
+        - updatedAt
+        - startingDate
         - expenses
     
     create_course_dto:
@@ -1120,12 +1125,12 @@ components:
             $ref: '#/components/schemas/attendee'
       required:
         - id
-        - created_at
-        - updated_at
+        - createdAt
+        - updatedAt
         - firstName
         - lastName
         - email
-        - billing_address
+        - billingAddress
         - status
         - attendees
 

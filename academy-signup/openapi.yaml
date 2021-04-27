@@ -830,7 +830,7 @@ components:
             $ref: '#/components/schemas/validation_error'
       required:
         - status
-        - validation_errors
+        - validationErrors
 
     validation_error:
       type: object

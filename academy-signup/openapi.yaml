@@ -656,14 +656,7 @@ components:
       content:
         application/json:
           schema:
-              type: object
-              properties:
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/course'
-                pagination:
-                  $ref: '#/components/schemas/pagination'
+            $ref: '#/components/schemas/paginated_courses_response'
 
     # registration responses
     registration:
@@ -689,16 +682,8 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              items:
-                type: array
-                items:
-                  $ref: '#/components/schemas/registration'
-              pagination:
-                $ref: '#/components/schemas/pagination'
-          
-
+            $ref: '#/components/schemas/paginated_registrations_response'
+            
     registration_comment:
       description: registration comment
       content:
@@ -853,9 +838,20 @@ components:
         path:
           type: string
           example: 'address.country'
-        message:
-          type: string
-          example: 'value "Deutschland" is not a valid country code'
+        constraints:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                example: 'isEnum'
+              message:
+                type: string
+                example: 'value "Deutschland" is not a valid country code'
+            required:
+              - type
+              - message            
 
     # user schemas
     user_id:
@@ -1289,16 +1285,32 @@ components:
       required:
         - _version
 
-    # other schemas
-    notification_options:
+    # response schemas
+    paginated_registrations_response:
       type: object
       properties:
-        enabled:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: 'Dear attendee, your registration was accepted.'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/registration'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+        - items
+        - pagination
+
+    paginated_courses_response:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/course'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+        - items
+        - pagination
 
     pagination:
       type: object
@@ -1315,3 +1327,14 @@ components:
         perPage:
           type: integer
           example: 20
+
+    # other schemas
+    notification_options:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: 'Dear attendee, your registration was accepted.'

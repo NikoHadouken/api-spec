@@ -120,17 +120,6 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  # /courses/attendee-counts:
-  #   get:
-  #     summary: get attendee counts of given courses
-  #     description: get attendee counts of given courses
-  #     operationId: get_attendee_count_list
-  #     tags:
-  #       - course
-  #       - attendee
-  #     responses:
-  #       '200':
-  #         $ref: '#/components/responses/attendee_count_list'
 
   /courses/{courseId}:
     parameters:
@@ -186,7 +175,7 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  /courses/{courseId}/attendee-counts:
+  /courses/{courseId}/attendees/counts:
     parameters:
       - in: path
         name: courseId
@@ -195,8 +184,8 @@ paths:
         required: true
         description: Id of the course
     get:
-      summary: get attendee counts of given courses
-      description: get attendee counts of given courses
+      summary: get attendee counts of given course
+      description: get attendee counts of given course
       operationId: get_attendee_counts
       tags:
         - course
@@ -204,6 +193,25 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/attendee_counts'
+
+  /courses/{courseId}/registrations/counts:
+    parameters:
+      - in: path
+        name: courseId
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+    get:
+      summary: get registration counts of given course
+      description: get attendee counts of given course
+      operationId: get_registration_counts
+      tags:
+        - course
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/registration_counts'
 
   /courses/{courseId}/expenses:
     parameters:
@@ -841,6 +849,13 @@ components:
           schema:
             $ref: '#/components/schemas/attendee_counts'
 
+    registration_counts:
+      description: registration counts for course
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/registration_counts'
+
     attendee_count_list:
       description: list of attendee counts for courses
       content:
@@ -1012,6 +1027,36 @@ components:
       enum: ['seminar', 'training_program']
       example: seminar
 
+    counts_by_registration_status:
+      type: object
+      properties:
+        pending:
+          type: integer
+        rejected:
+          type: integer
+        confirmed:
+          type: integer
+        cancelled:
+          type: integer
+        payed:
+          type: integer
+        refunded:
+          type: integer
+      example:
+        pending: 10
+        rejected: 2
+        confirmed: 20
+        cancelled: 0
+        payed: 2
+        refunded: 0
+      required:
+        - pending
+        - rejected
+        - confirmed
+        - cancelled
+        - payed
+        - refunded
+
     attendee_counts:
       type: object
       properties:
@@ -1024,31 +1069,28 @@ components:
         free:
           type: integer
         byStatus:
-          type: object
-          properties:
-            pending:
-              type: integer
-            rejected:
-              type: integer
-            confirmed:
-              type: integer
-            cancelled:
-              type: integer
-            payed:
-              type: integer
-            refunded:
-              type: integer
-      example:
-        max: 30
-        occupied: 22
-        free: 8
+          $ref: '#/components/schemas/counts_by_registration_status'
+      required:
+        - courseId
+        - max
+        - occupied
+        - free
+        - byStatus
+
+    registration_counts:
+      type: object
+      properties:
+        courseId:
+          $ref: '#/components/schemas/registration_id'
+        total:
+          type: integer
         byStatus:
-          pending: 10
-          rejected: 2
-          confirmed: 20
-          cancelled: 0
-          payed: 2
-          refunded: 0
+          $ref: '#/components/schemas/counts_by_registration_status'
+      required:
+        - courseId
+        - total
+        - byStatus
+
 
     course_expense_id:
       type: integer

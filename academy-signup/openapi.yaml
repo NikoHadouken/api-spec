@@ -35,6 +35,10 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/courses_order_by'
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/course_types'
       responses:
         '200':
           $ref: '#/components/responses/course_list'
@@ -64,16 +68,20 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/courses_order_by'
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/course_types'
       tags:
         - course
       responses:
         '200':
           $ref: '#/components/responses/course_list'
 
-  /courses/trashed/{id}:
+  /courses/trashed/{courseId}:
     parameters:
       - in: path
-        name: id
+        name: courseId
         schema:
           $ref: '#/components/schemas/course_id'
         required: true
@@ -112,10 +120,22 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  /courses/{id}:
+  # /courses/attendee-counts:
+  #   get:
+  #     summary: get attendee counts of given courses
+  #     description: get attendee counts of given courses
+  #     operationId: get_attendee_count_list
+  #     tags:
+  #       - course
+  #       - attendee
+  #     responses:
+  #       '200':
+  #         $ref: '#/components/responses/attendee_count_list'
+
+  /courses/{courseId}:
     parameters:
       - in: path
-        name: id
+        name: courseId
         schema:
           $ref: '#/components/schemas/course_id'
         required: true
@@ -166,12 +186,29 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-
-
-  /courses/{id}/expenses:
+  /courses/{courseId}/attendee-counts:
     parameters:
       - in: path
-        name: id
+        name: courseId
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+    get:
+      summary: get attendee counts of given courses
+      description: get attendee counts of given courses
+      operationId: get_attendee_counts
+      tags:
+        - course
+        - attendee
+      responses:
+        '200':
+          $ref: '#/components/responses/attendee_counts'
+
+  /courses/{courseId}/expenses:
+    parameters:
+      - in: path
+        name: courseId
         schema:
           $ref: '#/components/schemas/course_id'
         required: true
@@ -198,10 +235,10 @@ paths:
         '422':
           $ref: '#/components/responses/error_validation_failed'
 
-  /courses/{id}/expenses/{expenseId}:
+  /courses/{courseId}/expenses/{expenseId}:
     parameters:
       - in: path
-        name: id
+        name: courseId
         schema:
           $ref: '#/components/schemas/course_id'
         required: true
@@ -256,6 +293,11 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
+        - $ref: '#/components/parameters/course_id'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/registrations_order_by'
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/registration_statuses'
       responses:
         '200':
           $ref: '#/components/responses/registration_list'
@@ -285,16 +327,21 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
+        - $ref: '#/components/parameters/course_id'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/registrations_order_by'
+        - $ref: '#/components/parameters/keyword'
+        - $ref: '#/components/parameters/registration_statuses'
       tags:
         - registration
       responses:
         '200':
           $ref: '#/components/responses/registration_list'
 
-  /registrations/trashed/{id}:
+  /registrations/trashed/{regId}:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
@@ -333,10 +380,10 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  /registrations/{id}:
+  /registrations/{regId}:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
@@ -387,10 +434,10 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  /registrations/{id}/actions/:action:
+  /registrations/{regId}/actions/{action}:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
@@ -426,10 +473,10 @@ paths:
           $ref: '#/components/responses/error_validation_failed'
 
   # registration comment paths
-  /registrations/{id}/comments:
+  /registrations/{regId}/comments:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
@@ -446,6 +493,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/registration_comment_list'
+        '404':
+          $ref: '#/components/responses/error_not_found'
     post:
       summary: create comment
       description: Adds a new comment to a registration
@@ -457,19 +506,21 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_registration_dto'
+              $ref: '#/components/schemas/create_registration_comment_dto'
       responses:
         '201':
-          $ref: '#/components/responses/registration'
+          $ref: '#/components/responses/registration_comment'
+        '404':
+          $ref: '#/components/responses/error_not_found'
         '422':
           $ref: '#/components/responses/error_validation_failed'
   
 
   # attendee paths
-  /registrations/{id}/attendees:
+  /registrations/{regId}/attendees:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
@@ -488,20 +539,22 @@ paths:
               $ref: '#/components/schemas/create_attendee_dto'
       responses:
         '201':
-          $ref: '#/components/responses/attendee'
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/error_not_found'
         '422':
           $ref: '#/components/responses/error_validation_failed'
 
-  /registrations/{id}/attendees/{attendee_id}:
+  /registrations/{regId}/attendees/{attendeeId}:
     parameters:
       - in: path
-        name: id
+        name: regId
         schema:
           $ref: '#/components/schemas/registration_id'
         required: true
         description: Id of the registration
       - in: path
-        name: attendee_id
+        name: attendeeId
         schema:
           $ref: '#/components/schemas/attendee_id'
         required: true
@@ -520,7 +573,7 @@ paths:
               $ref: '#/components/schemas/update_attendee_dto'
       responses:
         '200':
-          $ref: '#/components/responses/attendee'
+          $ref: '#/components/responses/registration'
         '404':
           $ref: '#/components/responses/error_not_found'
         '409':
@@ -535,7 +588,7 @@ paths:
         - attendee
       responses:
         '200':
-          $ref: '#/components/responses/attendee'
+          $ref: '#/components/responses/registration'
         '404':
           $ref: '#/components/responses/error_not_found'
 
@@ -548,39 +601,99 @@ components:
 
   parameters:
     page:
+      description: page to retrieve
       in: query
       name: page
-      description: page to retrieve
       schema:
         type: integer
         minimum: 1
         default: 1
       required: false
     per_page:
+      description: 'num of items per page'
       in: query
       name: perPage
-      description: 'num of entries per page'
       schema:
         type: integer
         minimum: 1
         maximum: 100
         default: 20
       required: false
+    course_id:
+      description: limit results to registrations belonging to this course
+      in: query
+      name: courseId
+      schema:
+        type: integer
+        minimum: 1
+      required: false
     permanent:
+      description: force permanent delete instead of moving to trash
       in: query
       name: permanent
-      description: force permanent delete instead of moving to trash
       schema:
         type: boolean
         default: false
       required: false
     version:
-        in: query
-        name: version
-        schema:
-          $ref: '#/components/schemas/record_version'
-        required: true
-        description: entity version for concurrency control
+      description: entity version for concurrency control
+      in: query
+      name: version
+      schema:
+        $ref: '#/components/schemas/record_version'
+      required: true
+    keyword:
+      description: search by keyword
+      in: query
+      name: keyword
+      schema:
+        type: string
+        minLength: 3
+    registration_statuses:
+      description: filter registrations by status
+      in: query
+      name: statuses
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/registration_status'
+      required: false
+    course_types:
+      description: filter courses by type
+      in: query
+      name: types
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/course_type'
+      required: false
+    courses_order_by:
+      description: order course items by fields
+      in: query
+      name: orderBy
+      schema:
+        type: string
+        enum: ['createdAt', 'startingDate', 'type', 'name']
+        example: createdAt
+      required: false
+    registrations_order_by:
+      description: order registration items by fields
+      in: query
+      name: orderBy
+      schema:
+        type: string
+        enum: ['createdAt', 'status']
+        example: createdAt
+      required: false
+    order:
+      description: set order mode ascending or descending
+      in: query
+      name: order
+      schema:
+        type: string
+        enum: ['asc', 'desc']
+        example: desc
+      required: false
 
   # requestBodies:
 
@@ -696,9 +809,7 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/registration_comment'
+            $ref: '#/components/schemas/paginated_registration_comments_response'
 
     # attendee responses
     attendee:
@@ -722,6 +833,27 @@ components:
             type: array
             items:
               $ref: '#/components/schemas/attendee'
+
+    attendee_counts:
+      description: attendee counts for course
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/attendee_counts'
+
+    attendee_count_list:
+      description: list of attendee counts for courses
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                courseId:
+                  $ref: '#/components/schemas/course_id'
+                counts:
+                  $ref: '#/components/schemas/attendee_counts'
 
   schemas:
     # value objects and types
@@ -883,25 +1015,40 @@ components:
     attendee_counts:
       type: object
       properties:
-        pending:
+        courseId:
+          $ref: '#/components/schemas/course_id'
+        max:
           type: integer
-        rejected:
+        occupied:
           type: integer
-        confirmed:
+        free:
           type: integer
-        cancelled:
-          type: integer
-        payed:
-          type: integer
-        refunded:
-          type: integer
-      example: 
-        pending: 22
-        rejected: 2
-        confirmed: 0
-        cancelled: 0
-        payed: 0
-        refunded: 0
+        byStatus:
+          type: object
+          properties:
+            pending:
+              type: integer
+            rejected:
+              type: integer
+            confirmed:
+              type: integer
+            cancelled:
+              type: integer
+            payed:
+              type: integer
+            refunded:
+              type: integer
+      example:
+        max: 30
+        occupied: 22
+        free: 8
+        byStatus:
+          pending: 10
+          rejected: 2
+          confirmed: 20
+          cancelled: 0
+          payed: 2
+          refunded: 0
 
     course_expense_id:
       type: integer
@@ -912,6 +1059,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/course_expense_id'
+        _version:
+          $ref: '#/components/schemas/record_version'
         name:
           type: string
           example: Catering
@@ -921,6 +1070,7 @@ components:
           $ref: '#/components/schemas/vat_rate'
       required:
         - id
+        - _version
         - name
         - price
         - vatRate
@@ -945,7 +1095,6 @@ components:
       properties:
         _version:
           $ref: '#/components/schemas/record_version'
-          description: version of the course expense to update
         name:
           type: string
           example: Catering
@@ -963,15 +1112,18 @@ components:
           $ref: '#/components/schemas/course_id'
         _version:
           $ref: '#/components/schemas/record_version'
+        _deletedAt:
+          type: string
+          format: date-time
         name:
           type: string
           example: Medicinal Herbs
         type:
           $ref: '#/components/schemas/course_type'
-        attendeeCapacity:
-          type: integer
-          minimum: 0
-          example: 20
+        # attendeeCapacity:
+        #   type: integer
+        #   minimum: 0
+        #   example: 20
         attendeeCounts:
           $ref: '#/components/schemas/attendee_counts'
         createdAt:
@@ -992,9 +1144,10 @@ components:
             $ref: '#/components/schemas/course_expense'
       required:
         - id
+        - _version
         - name
         - type
-        - attendeeCapacity
+        # - attendeeCapacity
         - createdAt
         - updatedAt
         - startingDate
@@ -1055,7 +1208,7 @@ components:
 
     registration_action:
       type: string
-      enum: ['undo', 'confirm', 'reject', 'cancel', 'pay', 'refund']
+      enum: ['undo', 'reset', 'confirm', 'reject', 'cancel', 'pay', 'refund']
       example: confirm
 
     registration_action_params:
@@ -1075,6 +1228,9 @@ components:
           $ref: '#/components/schemas/registration_id'
         _version:
           $ref: '#/components/schemas/record_version'
+        _deletedAt:
+          type: string
+          format: date-time
         createdAt:
           type: string
           format: date-time
@@ -1110,10 +1266,16 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/attendee'
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/registration_comment'
       required:
         - id
+        - _version
         - createdAt
         - updatedAt
+        - courseId
         - firstName
         - lastName
         - email
@@ -1215,6 +1377,8 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/attendee_id'
+        _version:
+          $ref: '#/components/schemas/record_version'
         registrationId:
           $ref: '#/components/schemas/registration_id'
         firstName:
@@ -1234,6 +1398,7 @@ components:
           $ref: '#/components/schemas/address'
       required:
         - id
+        - _version
         - registrationId
         - firstName
         - lastName
@@ -1293,6 +1458,19 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/registration'
+        pagination:
+          $ref: '#/components/schemas/pagination'
+      required:
+        - items
+        - pagination
+
+    paginated_registration_comments_response:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/registration_comment'
         pagination:
           $ref: '#/components/schemas/pagination'
       required:

@@ -77,6 +77,15 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/course_list'
+    delete:
+      summary: delete all trashed courses
+      description: Delete all trashed courses
+      operationId: delete_all_trashed_courses
+      tags:
+        - course
+      responses:
+        '200':
+          $ref: '#/components/responses/deleted_ids'
 
   /courses/trashed/{courseId}:
     parameters:
@@ -189,7 +198,6 @@ paths:
       operationId: get_attendee_counts
       tags:
         - course
-        - attendee
       responses:
         '200':
           $ref: '#/components/responses/attendee_counts'
@@ -208,7 +216,6 @@ paths:
       operationId: get_registration_counts
       tags:
         - course
-        - registration
       responses:
         '200':
           $ref: '#/components/responses/registration_counts'
@@ -301,7 +308,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_id'
+        - $ref: '#/components/parameters/course_ids'
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/registrations_order_by'
         - $ref: '#/components/parameters/keyword'
@@ -335,7 +342,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/page'
         - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_id'
+        - $ref: '#/components/parameters/course_ids'
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/registrations_order_by'
         - $ref: '#/components/parameters/keyword'
@@ -345,6 +352,17 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/registration_list'
+    delete:
+      summary: delete all trashed registrations
+      description: Delete all trashed registrations
+      operationId: delete_all_trashed_registrations
+      parameters:
+        - $ref: '#/components/parameters/course_ids'
+      tags:
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/deleted_ids'
 
   /registrations/trashed/{regId}:
     parameters:
@@ -635,6 +653,15 @@ components:
         type: integer
         minimum: 1
       required: false
+    course_ids:
+      description: limit results to registrations belonging to of of these courses
+      in: query
+      name: courseIds
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/entity_id'
+      required: false
     permanent:
       description: force permanent delete instead of moving to trash
       in: query
@@ -778,6 +805,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/paginated_courses_response'
+
+    deleted_ids:
+      description: list of deleted entity ids
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/entity_id'
 
     # registration responses
     registration:
@@ -999,6 +1035,10 @@ components:
             required:
               - type
               - message            
+
+    entity_id:
+      type: integer
+      example: 1
 
     # user schemas
     user_id:

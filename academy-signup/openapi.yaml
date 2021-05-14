@@ -942,12 +942,6 @@ components:
     address:
       type: object
       properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
         companyName:
           type: string
           example: Acme Inc.
@@ -967,8 +961,6 @@ components:
         address3:
           type: string
       required:
-        - firstName
-        - lastName
         - country
         - city
         - postcode
@@ -1285,12 +1277,12 @@ components:
 
     registration_status:
       type: string
-      enum: ['pending', 'rejected', 'confirmed', 'cancelled', 'payed', 'refunded']
+      enum: ['pending', 'rejected', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
       example: pending
 
     registration_action:
       type: string
-      enum: ['undo', 'reset', 'confirm', 'reject', 'cancel', 'pay', 'refund']
+      enum: ['undo', 'reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'refund']
       example: confirm
 
     registration_action_params:

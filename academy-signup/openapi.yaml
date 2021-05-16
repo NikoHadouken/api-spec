@@ -24,6 +24,28 @@ tags:
     description: Everything about attendees of an academy course/registration
 
 paths:
+  # signup paths
+  /signup:
+    post:
+      summary: submit registration for academy course
+      description: Customer signup request
+      operationId: submitCourseSignup
+      tags:
+        - signup
+      requestBody:
+        description: submit signup dto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/submit_signup_dto'
+      responses:
+        '201':
+          $ref: '#/components/responses/signup'
+        '412':
+          $ref: '#/components/responses/error_missing_reference'
+        '422':
+          $ref: '#/components/responses/error_validation_failed'
+
   # course paths
   /courses:
     get:
@@ -184,42 +206,6 @@ paths:
         '404':
           $ref: '#/components/responses/error_not_found'
 
-  /courses/{courseId}/attendees/counts:
-    parameters:
-      - in: path
-        name: courseId
-        schema:
-          $ref: '#/components/schemas/course_id'
-        required: true
-        description: Id of the course
-    get:
-      summary: get attendee counts of given course
-      description: get attendee counts of given course
-      operationId: get_attendee_counts
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/attendee_counts'
-
-  /courses/{courseId}/registrations/counts:
-    parameters:
-      - in: path
-        name: courseId
-        schema:
-          $ref: '#/components/schemas/course_id'
-        required: true
-        description: Id of the course
-    get:
-      summary: get registration counts of given course
-      description: get attendee counts of given course
-      operationId: get_registration_counts
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/registration_counts'
-
   /courses/{courseId}/expenses:
     parameters:
       - in: path
@@ -333,6 +319,17 @@ paths:
           $ref: '#/components/responses/registration'
         '422':
           $ref: '#/components/responses/error_validation_failed'
+
+  /registrations/counts:
+    get:
+      summary: get registrations counts
+      description: Get registrations counts
+      operationId: get_registration_counts
+      tags:
+        - registration
+      responses:
+        '200':
+          $ref: '#/components/responses/registration_counts'
 
   /registrations/trashed:
     get:
@@ -878,12 +875,12 @@ components:
             items:
               $ref: '#/components/schemas/attendee'
 
-    attendee_counts:
-      description: attendee counts for course
+    course_stats:
+      description: stats for course
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/attendee_counts'
+            $ref: '#/components/schemas/course_stats'
 
     registration_counts:
       description: registration counts for course
@@ -892,19 +889,16 @@ components:
           schema:
             $ref: '#/components/schemas/registration_counts'
 
-    attendee_count_list:
-      description: list of attendee counts for courses
+
+    # signup responses
+    signup:
+      description: created registrations
       content:
         application/json:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                courseId:
-                  $ref: '#/components/schemas/course_id'
-                counts:
-                  $ref: '#/components/schemas/attendee_counts'
+              $ref: '#/components/schemas/registration'
 
   schemas:
     # value objects and types
@@ -1064,9 +1058,11 @@ components:
       properties:
         pending:
           type: integer
-        rejected:
-          type: integer
         confirmed:
+          type: integer
+        onWaitingList:
+          type: integer
+        placeOffered:
           type: integer
         cancelled:
           type: integer
@@ -1076,50 +1072,77 @@ components:
           type: integer
       example:
         pending: 10
-        rejected: 2
         confirmed: 20
+        placeOffered: 3
+        onWaitingList: 12
         cancelled: 0
         payed: 2
         refunded: 0
       required:
         - pending
-        - rejected
         - confirmed
+        - onWaitingList
+        - placeOffered
         - cancelled
         - payed
         - refunded
 
-    attendee_counts:
+    course_stats:
       type: object
       properties:
         courseId:
           $ref: '#/components/schemas/course_id'
-        max:
-          type: integer
-        occupied:
-          type: integer
-        free:
-          type: integer
-        byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
+        attendees:
+          $ref: '#/components/schemas/attendee_stats'
+        registrations:
+          $ref: '#/components/schemas/registration_stats'
       required:
         - courseId
-        - max
-        - occupied
-        - free
-        - byStatus
+        - attendees
+        - registrations
 
-    registration_counts:
+    attendee_stats:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/registration_id'
+          $ref: '#/components/schemas/course_id'
+        limit:
+          type: number
+        available: 
+          type: number
         total:
           type: integer
         byStatus:
           $ref: '#/components/schemas/counts_by_registration_status'
       required:
         - courseId
+        - limit
+        - available
+        - total
+        - byStatus
+
+    registration_stats:
+      type: object
+      properties:
+        courseId:
+          $ref: '#/components/schemas/course_id'
+        total:
+          type: integer
+        byStatus:
+          $ref: '#/components/schemas/counts_by_registration_status'
+      required:
+        - courseId
+        - total
+        - byStatus
+
+    registration_counts:
+      type: object
+      properties:
+        total:
+          type: integer
+        byStatus:
+          $ref: '#/components/schemas/counts_by_registration_status'
+      required:
         - total
         - byStatus
 
@@ -1194,12 +1217,12 @@ components:
           example: Medicinal Herbs
         type:
           $ref: '#/components/schemas/course_type'
-        # attendeeCapacity:
-        #   type: integer
-        #   minimum: 0
-        #   example: 20
-        attendeeCounts:
-          $ref: '#/components/schemas/attendee_counts'
+        attendeeCapacity:
+          type: integer
+          minimum: 0
+          example: 20
+        stats:
+          $ref: '#/components/schemas/course_stats'
         createdAt:
           type: string
           format: date-time
@@ -1221,7 +1244,7 @@ components:
         - _version
         - name
         - type
-        # - attendeeCapacity
+        - attendeeCapacity
         - createdAt
         - updatedAt
         - startingDate
@@ -1277,12 +1300,12 @@ components:
 
     registration_status:
       type: string
-      enum: ['pending', 'rejected', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
+      enum: ['pending', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
       example: pending
 
     registration_action:
       type: string
-      enum: ['undo', 'reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'refund']
+      enum: ['reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'undoPay', 'refund', 'undoRefund']
       example: confirm
 
     registration_action_params:
@@ -1372,6 +1395,9 @@ components:
           type: string
           format: email
           example: john.doe@example.com
+        phoneNumber:
+          type: string
+          example: '(+49) 0555 1234 1234'
         note:
           type: string
         billingAddress:
@@ -1398,6 +1424,9 @@ components:
           type: string
           format: email
           example: john.doe@example.com
+        phoneNumber:
+          type: string
+          example: '(+49) 0555 1234 1234'
         note:
           type: string
         billingAddress:
@@ -1524,6 +1553,79 @@ components:
       required:
         - _version
 
+    # signup schemas
+    signup_billing_dto: 
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        phoneNumber:
+          type: string
+          example: '(+49) 0555 1234 1234'
+        note:
+          type: string
+        address:
+          $ref: '#/components/schemas/address'
+      required:
+        - firstName
+        - lastName
+        - email
+        - phoneNumber
+        - address
+
+    signup_attendee_dto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: john.doe@example.com
+        isBilledSeparately:
+          type: boolean
+        phoneNumber:
+          type: string
+          example: '(+49) 0555 1234 1234'
+        address:
+          $ref: '#/components/schemas/address'
+      required:
+        - firstName
+        - lastName
+        - email
+        - isBilledSeparately
+
+    submit_signup_dto:
+      type: object
+      properties:
+        courseId:
+          $ref: '#/components/schemas/course_id'
+        acceptTerms:
+          type: boolean
+        billing:
+          $ref: '#/components/schemas/signup_billing_dto'
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/signup_attendee_dto'
+      required:
+        - courseId
+        - acceptTerms
+        - billing
+        - attendees
+            
     # response schemas
     paginated_registrations_response:
       type: object

@@ -608,6 +608,27 @@ paths:
           $ref: '#/components/responses/error_conflict'
         '422':
           $ref: '#/components/responses/error_validation_failed'
+    put:
+      summary: set attendee
+      description: override attendee
+      operationId: set_attendee
+      tags:
+        - attendee
+      requestBody:
+        description: attendee data
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/create_attendee_dto'
+      responses:
+        '200':
+          $ref: '#/components/responses/registration'
+        '404':
+          $ref: '#/components/responses/error_not_found'
+        '409':
+          $ref: '#/components/responses/error_conflict'
+        '422':
+          $ref: '#/components/responses/error_validation_failed'
     delete:
       summary: delete attendee
       description: permanently delete a attendee

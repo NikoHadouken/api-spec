@@ -623,7 +623,7 @@ paths:
 components:
   securitySchemes:
     none:
-      type: none
+      type: http
       description: Publicly accessible (no authentication needed)
     bearer_auth:
       type: http

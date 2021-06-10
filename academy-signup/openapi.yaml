@@ -23,10 +23,14 @@ tags:
   - name: attendee
     description: Everything about attendees of an academy course/registration
 
+security:
+  - bearer_auth: []
+
 paths:
   # signup paths
   /signup:
     post:
+      security:
       summary: submit registration for academy course
       description: Customer signup request
       operationId: submitCourseSignup
@@ -616,11 +620,11 @@ paths:
           $ref: '#/components/responses/error_not_found'
 
 components:
-  # securitySchemes:
-  #   jwt_token:
-  #     type: http
-  #     scheme: bearer
-  #     bearerFormat: jwt
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
   parameters:
     page:
@@ -1313,7 +1317,7 @@ components:
       properties:
         _version:
           $ref: '#/components/schemas/record_version'
-        notification_options:
+        notificationOptions:
           $ref: '#/components/schemas/notification_options'
       required:
         - _version

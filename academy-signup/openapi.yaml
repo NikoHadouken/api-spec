@@ -1,1702 +1,1703 @@
-openapi: 3.0.0
-info:
-  version: 0.0.1-draft
-  title: Academy Signup
-  description: | 
-    ![storl](https://www.storl.de/wp-content/uploads/2021/03/Element-38-400x77.png)
+  openapi: 3.0.0
+  info:
+    version: 0.0.1-draft
+    title: Academy Signup
+    description: | 
+      ![storl](https://www.storl.de/wp-content/uploads/2021/03/Element-38-400x77.png)
 
-    **Academy Signup** api
+      **Academy Signup** api
 
-servers:
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/Hadouken-Test/academy_signup/0.0.1-draft
-  - description: production
-    url: https://api.storl.de/academy-signup/v1
-  - description: development
-    url: '/'
+  servers:
+    - description: SwaggerHub API Auto Mocking
+      url: https://virtserver.swaggerhub.com/Hadouken-Test/academy_signup/0.0.1-draft
+    - description: production
+      url: https://api.storl.de/academy-signup/v1
+    - description: development
+      url: '/'
+      
+  tags:
+    - name: course
+      description: Everything about academy courses
+    - name: registration
+      description: Everything about registrations to academy courses
+    - name: attendee
+      description: Everything about attendees of an academy course/registration
+
+  security:
+    - bearer_auth: []
+
+  paths:
+    # signup paths
+    /signup:
+      post:
+        security:
+          - none: []
+        summary: submit registration for academy course
+        description: Customer signup request
+        operationId: submitCourseSignup
+        tags:
+          - signup
+        requestBody:
+          description: submit signup dto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/submit_signup_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/signup'
+          '412':
+            $ref: '#/components/responses/error_missing_reference'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+
+    # course paths
+    /courses:
+      get:
+        summary: list courses
+        description: Get a list of academy courses
+        operationId: list_courses
+        tags:
+          - course
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/per_page'
+          - $ref: '#/components/parameters/order'
+          - $ref: '#/components/parameters/courses_order_by'
+          - $ref: '#/components/parameters/keyword'
+          - $ref: '#/components/parameters/course_types'
+        responses:
+          '200':
+            $ref: '#/components/responses/course_list'
+      post:
+        summary: create course
+        description: Adds a new course to the system
+        operationId: create_course
+        tags:
+          - course
+        requestBody:
+          description: course data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_course_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/course'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+
+    /courses/trashed:
+      get:
+        summary: list trashed courses
+        description: Retrieve courses that got soft-deleted
+        operationId: list_trashed_courses
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/per_page'
+          - $ref: '#/components/parameters/order'
+          - $ref: '#/components/parameters/courses_order_by'
+          - $ref: '#/components/parameters/keyword'
+          - $ref: '#/components/parameters/course_types'
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course_list'
+      delete:
+        summary: delete all trashed courses
+        description: Delete all trashed courses
+        operationId: delete_all_trashed_courses
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/deleted_ids'
+
+    /courses/trashed/{courseId}:
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            $ref: '#/components/schemas/course_id'
+          required: true
+          description: Id of the course
+      get:
+        summary: get trashed course
+        description: Retrieve a course via it's id that got trashed
+        operationId: get_trashed_course
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      patch:
+        summary: restore trashed courses
+        description: Restore courses that got soft-deleted
+        operationId: restore_trashed_course
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      delete:
+        summary: permanently delete course
+        description: permanently delete a trashed course
+        operationId: delete_trashed_course
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+
+
+    /courses/{courseId}:
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            $ref: '#/components/schemas/course_id'
+          required: true
+          description: Id of the course
+      get:
+        summary: get course
+        description: Retrieve a course via it's id
+        operationId: get_course
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      patch:
+        summary: update course
+        description: apply changes to a course
+        operationId: update_course
+        tags:
+          - course
+        requestBody:
+          description: course data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update_course_dto'
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '412':
+            $ref: '#/components/responses/error_concurrency'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+      delete:
+        parameters:
+          - $ref: '#/components/parameters/permanent'
+        summary: trash or permanently delete course
+        description: perform a soft-delete on a course, or hard delete if parameter is set
+        operationId: delete_course
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+
+    /courses/{courseId}/expenses:
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            $ref: '#/components/schemas/course_id'
+          required: true
+          description: Id of the course
+      post:
+        summary: create course expense
+        description: Adds an expense item to the course
+        operationId: create_course_expense
+        tags:
+          - course
+        requestBody:
+          description: course expense data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_course_expense_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '412':
+            $ref: '#/components/responses/error_missing_reference'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+
+    /courses/{courseId}/expenses/{expenseId}:
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            $ref: '#/components/schemas/course_id'
+          required: true
+          description: Id of the course
+        - in: path
+          name: expenseId
+          schema:
+            $ref: '#/components/schemas/course_expense_id'
+          required: true
+          description: Id of the expense item
+      patch:
+        summary: update course expense
+        description: Updates course expense item
+        operationId: update_course_expense
+        tags:
+          - course
+        requestBody:
+          description: course expense data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update_course_expense_dto'
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '412':
+            $ref: '#/components/responses/error_concurrency'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+      delete:
+        summary: permanently delete course expense
+        description: permanently delete a course expense
+        operationId: delete_course_expense
+        tags:
+          - course
+        responses:
+          '200':
+            $ref: '#/components/responses/course'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+
+    # registration paths
+    /registrations:
+      get:
+        summary: list registrations
+        description: Get a list of academy registrations
+        operationId: list_registrations
+        tags:
+          - registration
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/per_page'
+          - $ref: '#/components/parameters/course_ids'
+          - $ref: '#/components/parameters/order'
+          - $ref: '#/components/parameters/registrations_order_by'
+          - $ref: '#/components/parameters/keyword'
+          - $ref: '#/components/parameters/registration_statuses'
+        responses:
+          '200':
+            $ref: '#/components/responses/registration_list'
+      post:
+        summary: create registration
+        description: Adds a registration to the system
+        operationId: create_registration
+        tags:
+          - registration
+        requestBody:
+          description: fields for a new registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_registration_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/registration'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+
+    /registrations/counts:
+      get:
+        summary: get registrations counts
+        description: Get registrations counts
+        operationId: get_registration_counts
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration_counts'
+
+    /registrations/trashed:
+      get:
+        summary: get trashed registrations
+        description: Retrieve registrations that got soft-deleted
+        operationId: list_trashed_registrations
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/per_page'
+          - $ref: '#/components/parameters/course_ids'
+          - $ref: '#/components/parameters/order'
+          - $ref: '#/components/parameters/registrations_order_by'
+          - $ref: '#/components/parameters/keyword'
+          - $ref: '#/components/parameters/registration_statuses'
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration_list'
+      delete:
+        summary: delete all trashed registrations
+        description: Delete all trashed registrations
+        operationId: delete_all_trashed_registrations
+        parameters:
+          - $ref: '#/components/parameters/course_ids'
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/deleted_ids'
+
+    /registrations/trashed/{regId}:
+      parameters:
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+      get:
+        summary: get trashed registration
+        description: Retrieve a registration via it's id that got trashed
+        operationId: get_trashed_registration
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      patch:
+        summary: restore trashed registrations
+        description: Restore registrations that got soft-deleted
+        operationId: restore_trashed_registration
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      delete:
+        summary: permanently delete registration
+        description: permanently delete a trashed registration
+        operationId: delete_trashed_registration
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+
+    /registrations/{regId}:
+      parameters:
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+      get:
+        summary: get registration
+        description: Retrieve a registration via it's id
+        operationId: get_registration
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      patch:
+        summary: update registration
+        description: apply changes to a registration
+        operationId: update_registration
+        tags:
+          - registration
+        requestBody:
+          description: registration data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update_registration_dto'
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '412':
+            $ref: '#/components/responses/error_concurrency'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+      delete:
+        parameters:
+          - $ref: '#/components/parameters/permanent'
+        summary: trash or permanently delete registration
+        description: perform a soft-delete on a registration, or hard delete if parameter is set
+        operationId: delete_registration
+        tags:
+          - registration
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+
+    /registrations/{regId}/actions/{action}:
+      parameters:
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+        - in: path
+          name: action
+          schema:
+            $ref: '#/components/schemas/registration_action'
+          required: true
+          description: Action to perform on registration
+      post:
+        summary: perform action
+        description: Perform action on registration
+        operationId: perform_registration_action
+        tags:
+          - registration
+        requestBody:
+          description: notification options
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registration_action_params'
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '409':
+            $ref: '#/components/responses/error_conflict'
+          '412':
+            $ref: '#/components/responses/error_concurrency'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+
+    # registration comment paths
+    /registrations/{regId}/comments:
+      parameters:
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+      get:
+        summary: list registration comments
+        description: Get a list comments to a registration
+        operationId: list_registration_comments
+        tags:
+          - registration
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/per_page'
+        responses:
+          '200':
+            $ref: '#/components/responses/registration_comment_list'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+      post:
+        summary: create comment
+        description: Adds a new comment to a registration
+        operationId: create_registration_comment
+        tags:
+          - registration
+        requestBody:
+          description: comment to registration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_registration_comment_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/registration_comment'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
     
-tags:
-  - name: course
-    description: Everything about academy courses
-  - name: registration
-    description: Everything about registrations to academy courses
-  - name: attendee
-    description: Everything about attendees of an academy course/registration
 
-security:
-  - bearer_auth: []
-
-paths:
-  # signup paths
-  /signup:
-    post:
-      security:
-        - none: []
-      summary: submit registration for academy course
-      description: Customer signup request
-      operationId: submitCourseSignup
-      tags:
-        - signup
-      requestBody:
-        description: submit signup dto
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/submit_signup_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/signup'
-        '412':
-          $ref: '#/components/responses/error_missing_reference'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-
-  # course paths
-  /courses:
-    get:
-      summary: list courses
-      description: Get a list of academy courses
-      operationId: list_courses
-      tags:
-        - course
+    # attendee paths
+    /registrations/{regId}/attendees:
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/courses_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/course_types'
-      responses:
-        '200':
-          $ref: '#/components/responses/course_list'
-    post:
-      summary: create course
-      description: Adds a new course to the system
-      operationId: create_course
-      tags:
-        - course
-      requestBody:
-        description: course data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/create_course_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/course'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+      post:
+        summary: create attendee
+        description: Adds a new attendee to the registration
+        operationId: create_attendee
+        tags:
+          - attendee
+        requestBody:
+          description: attendee data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/create_attendee_dto'
+        responses:
+          '201':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
 
-  /courses/trashed:
-    get:
-      summary: list trashed courses
-      description: Retrieve courses that got soft-deleted
-      operationId: list_trashed_courses
+    /registrations/{regId}/attendees/{attendeeId}:
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/courses_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/course_types'
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course_list'
-    delete:
-      summary: delete all trashed courses
-      description: Delete all trashed courses
-      operationId: delete_all_trashed_courses
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/deleted_ids'
+        - in: path
+          name: regId
+          schema:
+            $ref: '#/components/schemas/registration_id'
+          required: true
+          description: Id of the registration
+        - in: path
+          name: attendeeId
+          schema:
+            $ref: '#/components/schemas/attendee_id'
+          required: true
+          description: Id of the attendee
+      patch:
+        summary: update attendee
+        description: apply changes to an attendee
+        operationId: update_attendee
+        tags:
+          - attendee
+        requestBody:
+          description: attendee data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/update_attendee_dto'
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
+          '409':
+            $ref: '#/components/responses/error_conflict'
+          '422':
+            $ref: '#/components/responses/error_validation_failed'
+      delete:
+        summary: delete attendee
+        description: permanently delete a attendee
+        operationId: delete_attendee
+        tags:
+          - attendee
+        responses:
+          '200':
+            $ref: '#/components/responses/registration'
+          '404':
+            $ref: '#/components/responses/error_not_found'
 
-  /courses/trashed/{courseId}:
+  components:
+    securitySchemes:
+      none:
+        type: http
+        scheme: none
+        description: Publicly accessible (no authentication needed)
+      bearer_auth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+
     parameters:
-      - in: path
+      page:
+        description: page to retrieve
+        in: query
+        name: page
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+        required: false
+      per_page:
+        description: 'num of items per page'
+        in: query
+        name: perPage
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+        required: false
+      course_id:
+        description: limit results to registrations belonging to this course
+        in: query
         name: courseId
         schema:
-          $ref: '#/components/schemas/course_id'
-        required: true
-        description: Id of the course
-    get:
-      summary: get trashed course
-      description: Retrieve a course via it's id that got trashed
-      operationId: get_trashed_course
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    patch:
-      summary: restore trashed courses
-      description: Restore courses that got soft-deleted
-      operationId: restore_trashed_course
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    delete:
-      summary: permanently delete course
-      description: permanently delete a trashed course
-      operationId: delete_trashed_course
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-
-
-  /courses/{courseId}:
-    parameters:
-      - in: path
-        name: courseId
+          type: integer
+          minimum: 1
+        required: false
+      course_ids:
+        description: limit results to registrations belonging to of of these courses
+        in: query
+        name: courseIds
         schema:
-          $ref: '#/components/schemas/course_id'
+          type: array
+          items:
+            $ref: '#/components/schemas/entity_id'
+        required: false
+      permanent:
+        description: force permanent delete instead of moving to trash
+        in: query
+        name: permanent
+        schema:
+          type: boolean
+          default: false
+        required: false
+      version:
+        description: entity version for concurrency control
+        in: query
+        name: version
+        schema:
+          $ref: '#/components/schemas/record_version'
         required: true
-        description: Id of the course
-    get:
-      summary: get course
-      description: Retrieve a course via it's id
-      operationId: get_course
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    patch:
-      summary: update course
-      description: apply changes to a course
-      operationId: update_course
-      tags:
-        - course
-      requestBody:
-        description: course data
+      keyword:
+        description: search by keyword
+        in: query
+        name: keyword
+        schema:
+          type: string
+          minLength: 3
+      registration_statuses:
+        description: filter registrations by status
+        in: query
+        name: statuses
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/registration_status'
+        required: false
+      course_types:
+        description: filter courses by type
+        in: query
+        name: types
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/course_type'
+        required: false
+      courses_order_by:
+        description: order course items by fields
+        in: query
+        name: orderBy
+        schema:
+          type: string
+          enum: ['createdAt', 'startingDate', 'type', 'name']
+          example: createdAt
+        required: false
+      registrations_order_by:
+        description: order registration items by fields
+        in: query
+        name: orderBy
+        schema:
+          type: string
+          enum: ['createdAt', 'status']
+          example: createdAt
+        required: false
+      order:
+        description: set order mode ascending or descending
+        in: query
+        name: order
+        schema:
+          type: string
+          enum: ['asc', 'desc']
+          example: desc
+        required: false
+
+    # requestBodies:
+
+    responses:
+      # error responses
+      error_not_found:
+        description: 'error: not found'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_course_dto'
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-    delete:
-      parameters:
-        - $ref: '#/components/parameters/permanent'
-      summary: trash or permanently delete course
-      description: perform a soft-delete on a course, or hard delete if parameter is set
-      operationId: delete_course
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+              $ref: '#/components/schemas/http_error'
+            example:
+              status: 404
+              name: 'Not Found'
+              message: 'Entity was not found'
 
-  /courses/{courseId}/expenses:
-    parameters:
-      - in: path
-        name: courseId
-        schema:
-          $ref: '#/components/schemas/course_id'
-        required: true
-        description: Id of the course
-    post:
-      summary: create course expense
-      description: Adds an expense item to the course
-      operationId: create_course_expense
-      tags:
-        - course
-      requestBody:
-        description: course expense data
+      error_conflict:
+        description: 'error: conflict'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_course_expense_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_missing_reference'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+              $ref: '#/components/schemas/http_error'
+            example:
+              status: 409
+              name: 'error_conflict'
+              message: 'conflict with the current state of the resource'
 
-  /courses/{courseId}/expenses/{expenseId}:
-    parameters:
-      - in: path
-        name: courseId
-        schema:
-          $ref: '#/components/schemas/course_id'
-        required: true
-        description: Id of the course
-      - in: path
-        name: expenseId
-        schema:
-          $ref: '#/components/schemas/course_expense_id'
-        required: true
-        description: Id of the expense item
-    patch:
-      summary: update course expense
-      description: Updates course expense item
-      operationId: update_course_expense
-      tags:
-        - course
-      requestBody:
-        description: course expense data
+      error_concurrency:
+        description: 'error: concurrency'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_course_expense_dto'
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-    delete:
-      summary: permanently delete course expense
-      description: permanently delete a course expense
-      operationId: delete_course_expense
-      tags:
-        - course
-      responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+              $ref: '#/components/schemas/http_error'
+            example:
+              status: 412
+              name: 'Precondition failed'
+              message: 'optimistic currency control prevented update of outdated ressource'
 
-  # registration paths
-  /registrations:
-    get:
-      summary: list registrations
-      description: Get a list of academy registrations
-      operationId: list_registrations
-      tags:
-        - registration
-      parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_ids'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/registrations_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/registration_statuses'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration_list'
-    post:
-      summary: create registration
-      description: Adds a registration to the system
-      operationId: create_registration
-      tags:
-        - registration
-      requestBody:
-        description: fields for a new registration
+      error_missing_reference:
+        description: 'error: concurrency'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_registration_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/registration'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+              $ref: '#/components/schemas/http_error'
+            example:
+              status: 412
+              name: 'Precondition failed'
+              message: 'the course you refered to does not exist'
 
-  /registrations/counts:
-    get:
-      summary: get registrations counts
-      description: Get registrations counts
-      operationId: get_registration_counts
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration_counts'
-
-  /registrations/trashed:
-    get:
-      summary: get trashed registrations
-      description: Retrieve registrations that got soft-deleted
-      operationId: list_trashed_registrations
-      parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_ids'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/registrations_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/registration_statuses'
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration_list'
-    delete:
-      summary: delete all trashed registrations
-      description: Delete all trashed registrations
-      operationId: delete_all_trashed_registrations
-      parameters:
-        - $ref: '#/components/parameters/course_ids'
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/deleted_ids'
-
-  /registrations/trashed/{regId}:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-    get:
-      summary: get trashed registration
-      description: Retrieve a registration via it's id that got trashed
-      operationId: get_trashed_registration
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    patch:
-      summary: restore trashed registrations
-      description: Restore registrations that got soft-deleted
-      operationId: restore_trashed_registration
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    delete:
-      summary: permanently delete registration
-      description: permanently delete a trashed registration
-      operationId: delete_trashed_registration
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-
-  /registrations/{regId}:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-    get:
-      summary: get registration
-      description: Retrieve a registration via it's id
-      operationId: get_registration
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    patch:
-      summary: update registration
-      description: apply changes to a registration
-      operationId: update_registration
-      tags:
-        - registration
-      requestBody:
-        description: registration data
+      error_validation_failed:
+        description: 'error: validation failed'
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_registration_dto'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-    delete:
-      parameters:
-        - $ref: '#/components/parameters/permanent'
-      summary: trash or permanently delete registration
-      description: perform a soft-delete on a registration, or hard delete if parameter is set
-      operationId: delete_registration
-      tags:
-        - registration
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+              $ref: '#/components/schemas/http_error_validation_failed'
 
-  /registrations/{regId}/actions/{action}:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-      - in: path
-        name: action
-        schema:
-          $ref: '#/components/schemas/registration_action'
-        required: true
-        description: Action to perform on registration
-    post:
-      summary: perform action
-      description: Perform action on registration
-      operationId: perform_registration_action
-      tags:
-        - registration
-      requestBody:
-        description: notification options
+      # course responses
+      course:
+        description: course
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/registration_action_params'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '409':
-          $ref: '#/components/responses/error_conflict'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+              $ref: '#/components/schemas/course'
+        headers:
+          Location:
+            description: URI of the course
+            schema:
+              type: string
+              format: uri
 
-  # registration comment paths
-  /registrations/{regId}/comments:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-    get:
-      summary: list registration comments
-      description: Get a list comments to a registration
-      operationId: list_registration_comments
-      tags:
-        - registration
-      parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration_comment_list'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-    post:
-      summary: create comment
-      description: Adds a new comment to a registration
-      operationId: create_registration_comment
-      tags:
-        - registration
-      requestBody:
-        description: comment to registration
+      course_list:
+        description: list of courses
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_registration_comment_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/registration_comment'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-  
+              $ref: '#/components/schemas/paginated_courses_response'
 
-  # attendee paths
-  /registrations/{regId}/attendees:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-    post:
-      summary: create attendee
-      description: Adds a new attendee to the registration
-      operationId: create_attendee
-      tags:
-        - attendee
-      requestBody:
-        description: attendee data
+      deleted_ids:
+        description: list of deleted entity ids
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_attendee_dto'
-      responses:
-        '201':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+              type: array
+              items:
+                $ref: '#/components/schemas/entity_id'
 
-  /registrations/{regId}/attendees/{attendeeId}:
-    parameters:
-      - in: path
-        name: regId
-        schema:
-          $ref: '#/components/schemas/registration_id'
-        required: true
-        description: Id of the registration
-      - in: path
-        name: attendeeId
-        schema:
-          $ref: '#/components/schemas/attendee_id'
-        required: true
-        description: Id of the attendee
-    patch:
-      summary: update attendee
-      description: apply changes to an attendee
-      operationId: update_attendee
-      tags:
-        - attendee
-      requestBody:
-        description: attendee data
+      # registration responses
+      registration:
+        description: registration
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/update_attendee_dto'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '409':
-          $ref: '#/components/responses/error_conflict'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-    delete:
-      summary: delete attendee
-      description: permanently delete a attendee
-      operationId: delete_attendee
-      tags:
-        - attendee
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+              $ref: '#/components/schemas/registration'
+        headers:
+          Location:
+            description: URI of the registration
+            schema:
+              type: string
+              format: uri
+        links:
+          course:
+            operationId: courseId
+            parameters:
+            id: $response.body#/courseId
 
-components:
-  securitySchemes:
-    none:
-      type: http
-      description: Publicly accessible (no authentication needed)
-    bearer_auth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+      registration_list:
+        description: list of registrations
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/paginated_registrations_response'
+              
+      registration_comment:
+        description: registration comment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_comment'
 
-  parameters:
-    page:
-      description: page to retrieve
-      in: query
-      name: page
-      schema:
+      registration_comment_list:
+        description: list of registration comments
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/paginated_registration_comments_response'
+
+      # attendee responses
+      attendee:
+        description: attendee
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/attendee'
+        headers:
+          Location:
+            description: URI of the attendee
+            schema:
+              type: string
+              format: uri
+
+      attendee_list:
+        description: list of attendees
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/attendee'
+
+      course_stats:
+        description: stats for course
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/course_stats'
+
+      registration_counts:
+        description: registration counts for course
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registration_counts'
+
+
+      # signup responses
+      signup:
+        description: created registrations
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/registration'
+
+    schemas:
+      # value objects and types
+      record_version:
         type: integer
-        minimum: 1
-        default: 1
-      required: false
-    per_page:
-      description: 'num of items per page'
-      in: query
-      name: perPage
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-      required: false
-    course_id:
-      description: limit results to registrations belonging to this course
-      in: query
-      name: courseId
-      schema:
-        type: integer
-        minimum: 1
-      required: false
-    course_ids:
-      description: limit results to registrations belonging to of of these courses
-      in: query
-      name: courseIds
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/entity_id'
-      required: false
-    permanent:
-      description: force permanent delete instead of moving to trash
-      in: query
-      name: permanent
-      schema:
-        type: boolean
-        default: false
-      required: false
-    version:
-      description: entity version for concurrency control
-      in: query
-      name: version
-      schema:
-        $ref: '#/components/schemas/record_version'
-      required: true
-    keyword:
-      description: search by keyword
-      in: query
-      name: keyword
-      schema:
+        minimum: 0
+
+      country_code:
         type: string
-        minLength: 3
-    registration_statuses:
-      description: filter registrations by status
-      in: query
-      name: statuses
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/registration_status'
-      required: false
-    course_types:
-      description: filter courses by type
-      in: query
-      name: types
-      schema:
-        type: array
-        items:
-          $ref: '#/components/schemas/course_type'
-      required: false
-    courses_order_by:
-      description: order course items by fields
-      in: query
-      name: orderBy
-      schema:
+        enum: ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV', 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO', 'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU', 'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'TP', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ', 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE', 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU', 'GT', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA', 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ', 'IE', 'IL', 'IT', 'JM', 'JP', 'JO', 'KZ', 'KE', 'KI', 'KP', 'KR', 'KV', 'KW', 'KG', 'LA', 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU', 'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT', 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD', 'MC', 'MN', 'MS', 'ME', 'MA', 'MZ', 'MM', 'NA', 'NR', 'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG', 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS', 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT', 'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN', 'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN', 'RS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO', 'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ', 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC', 'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY', 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH', 'YE', 'ZM', 'ZW']
+        example: DE
+
+      money:
+        type: object
+        properties:
+          amount:
+            type: integer
+            example: 100
+          currency:
+            $ref: '#/components/schemas/currency_code'
+        required:
+          - amount
+          - currency
+
+      currency_code:
         type: string
-        enum: ['createdAt', 'startingDate', 'type', 'name']
-        example: createdAt
-      required: false
-    registrations_order_by:
-      description: order registration items by fields
-      in: query
-      name: orderBy
-      schema:
+        enum: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY', 'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYI', 'UYU', 'UYW', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'XSU', 'YER', 'ZAR', 'ZMW', 'ZWL']
+        example: 'EUR'
+
+      vat_rate:
         type: string
-        enum: ['createdAt', 'status']
-        example: createdAt
-      required: false
-    order:
-      description: set order mode ascending or descending
-      in: query
-      name: order
-      schema:
-        type: string
-        enum: ['asc', 'desc']
-        example: desc
-      required: false
+        pattern: '^(100|\d{1,2})(\.\d{1,4})?'
+        example: '19.00'
 
-  # requestBodies:
-
-  responses:
-    # error responses
-    error_not_found:
-      description: 'error: not found'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/http_error'
-          example:
-            status: 404
-            name: 'Not Found'
-            message: 'Entity was not found'
-
-    error_conflict:
-      description: 'error: conflict'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/http_error'
-          example:
-            status: 409
-            name: 'error_conflict'
-            message: 'conflict with the current state of the resource'
-
-    error_concurrency:
-      description: 'error: concurrency'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/http_error'
-          example:
-            status: 412
-            name: 'Precondition failed'
-            message: 'optimistic currency control prevented update of outdated ressource'
-
-    error_missing_reference:
-      description: 'error: concurrency'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/http_error'
-          example:
-            status: 412
-            name: 'Precondition failed'
-            message: 'the course you refered to does not exist'
-
-    error_validation_failed:
-      description: 'error: validation failed'
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/http_error_validation_failed'
-
-    # course responses
-    course:
-      description: course
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/course'
-      headers:
-        Location:
-          description: URI of the course
-          schema:
+      address:
+        type: object
+        properties:
+          companyName:
             type: string
-            format: uri
-
-    course_list:
-      description: list of courses
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/paginated_courses_response'
-
-    deleted_ids:
-      description: list of deleted entity ids
-      content:
-        application/json:
-          schema:
+            example: Acme Inc.
+          country:
+            $ref: '#/components/schemas/country_code'
+          city:
+            type: string
+            example: Berlin
+          postcode:
+            type: string
+            example: '12305'
+          address1:
+            type: string
+            example: Bahnhofstr. 51/2a
+          address2:
+            type: string
+          address3:
+            type: string
+        required:
+          - country
+          - city
+          - postcode
+          - address1
+    
+      # error schemas
+      http_error:
+        type: object
+        properties:
+          status:
+            type: integer
+            format: int32
+            example: 401
+          name:
+            type: string
+            example: 'Unauthorized'
+          message:
+            type: string
+            example: 'Token expired'
+          # data:
+          #   type: object
+        required:
+          - status
+          - message
+          
+      http_error_validation_failed:
+        type: object
+        properties:
+          status:
+            type: integer
+            format: int32
+            example: 422
+          name:
+            type: string
+            example: 'Unprocessable Entity'
+          message:
+            type: string
+            example: 'invalid request data'
+          validationErrors:
             type: array
             items:
-              $ref: '#/components/schemas/entity_id'
+              $ref: '#/components/schemas/validation_error'
+        required:
+          - status
+          - validationErrors
 
-    # registration responses
-    registration:
-      description: registration
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/registration'
-      headers:
-        Location:
-          description: URI of the registration
-          schema:
+      validation_error:
+        type: object
+        properties:
+          path:
             type: string
-            format: uri
-      links:
-        course:
-          operationId: courseId
-          parameters:
-           id: $response.body#/courseId
+            example: 'address.country'
+          constraints:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: 'isEnum'
+                message:
+                  type: string
+                  example: 'value "Deutschland" is not a valid country code'
+              required:
+                - type
+                - message            
 
-    registration_list:
-      description: list of registrations
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/paginated_registrations_response'
-            
-    registration_comment:
-      description: registration comment
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/registration_comment'
+      entity_id:
+        type: integer
+        example: 1
 
-    registration_comment_list:
-      description: list of registration comments
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/paginated_registration_comments_response'
+      # user schemas
+      user_id:
+        type: string
+        example: '1'
 
-    # attendee responses
-    attendee:
-      description: attendee
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/attendee'
-      headers:
-        Location:
-          description: URI of the attendee
-          schema:
+      user_subset:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/user_id'
+          name:
             type: string
-            format: uri
+            example: 'John Doe'
+        required:
+          - id
+          - name
 
-    attendee_list:
-      description: list of attendees
-      content:
-        application/json:
-          schema:
+      # course schemas
+      course_id:
+        type: integer
+        example: 1
+
+      course_type:
+        type: string
+        enum: ['seminar', 'training_program']
+        example: seminar
+
+      counts_by_registration_status:
+        type: object
+        properties:
+          pending:
+            type: integer
+          confirmed:
+            type: integer
+          onWaitingList:
+            type: integer
+          placeOffered:
+            type: integer
+          cancelled:
+            type: integer
+          payed:
+            type: integer
+          refunded:
+            type: integer
+        example:
+          pending: 10
+          confirmed: 20
+          placeOffered: 3
+          onWaitingList: 12
+          cancelled: 0
+          payed: 2
+          refunded: 0
+        required:
+          - pending
+          - confirmed
+          - onWaitingList
+          - placeOffered
+          - cancelled
+          - payed
+          - refunded
+
+      course_stats:
+        type: object
+        properties:
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          attendees:
+            $ref: '#/components/schemas/attendee_stats'
+          registrations:
+            $ref: '#/components/schemas/registration_stats'
+        required:
+          - courseId
+          - attendees
+          - registrations
+
+      attendee_stats:
+        type: object
+        properties:
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          limit:
+            type: number
+          available: 
+            type: number
+          total:
+            type: integer
+          byStatus:
+            $ref: '#/components/schemas/counts_by_registration_status'
+        required:
+          - courseId
+          - limit
+          - available
+          - total
+          - byStatus
+
+      registration_stats:
+        type: object
+        properties:
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          total:
+            type: integer
+          byStatus:
+            $ref: '#/components/schemas/counts_by_registration_status'
+        required:
+          - courseId
+          - total
+          - byStatus
+
+      registration_counts:
+        type: object
+        properties:
+          total:
+            type: integer
+          byStatus:
+            $ref: '#/components/schemas/counts_by_registration_status'
+        required:
+          - total
+          - byStatus
+
+
+      course_expense_id:
+        type: integer
+        example: 1
+
+      course_expense:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/course_expense_id'
+          _version:
+            $ref: '#/components/schemas/record_version'
+          name:
+            type: string
+            example: Catering
+          price:
+            $ref: '#/components/schemas/money'
+          vatRate:
+            $ref: '#/components/schemas/vat_rate'
+        required:
+          - id
+          - _version
+          - name
+          - price
+          - vatRate
+
+      create_course_expense_dto:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Catering
+          price:
+            $ref: '#/components/schemas/money'
+          vatRate:
+            $ref: '#/components/schemas/vat_rate'
+        required:
+          - name
+          - price
+          - vatRate
+
+      update_course_expense_dto:
+        type: object
+        properties:
+          _version:
+            $ref: '#/components/schemas/record_version'
+          name:
+            type: string
+            example: Catering
+          price:
+            $ref: '#/components/schemas/money'
+          vatRate:
+            $ref: '#/components/schemas/vat_rate'
+        required:
+          - _version
+      
+      course:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/course_id'
+          _version:
+            $ref: '#/components/schemas/record_version'
+          _deletedAt:
+            type: string
+            format: date-time
+          name:
+            type: string
+            example: Medicinal Herbs
+          type:
+            $ref: '#/components/schemas/course_type'
+          attendeeCapacity:
+            type: integer
+            minimum: 0
+            example: 20
+          stats:
+            $ref: '#/components/schemas/course_stats'
+          createdAt:
+            type: string
+            format: date-time
+            example: '2021-01-01T20:15:00+01:00'
+          updatedAt:
+            type: string
+            format: date-time
+            example: '2021-01-01T20:15:00+01:00'
+          startingDate:
+            type: string
+            format: date-time
+            example: '2021-02-01T20:15:00+01:00'
+          expenses:
+            type: array
+            items:
+              $ref: '#/components/schemas/course_expense'
+        required:
+          - id
+          - _version
+          - name
+          - type
+          - attendeeCapacity
+          - createdAt
+          - updatedAt
+          - startingDate
+          - expenses
+      
+      create_course_dto:
+        type: object
+        properties:
+          name:
+            type: string
+            example: New Course
+          type:
+            $ref: '#/components/schemas/course_type'
+          attendeeCapacity:
+            type: integer
+            minimum: 0
+            example: 20
+          startingDate:
+            type: string
+            format: date-time
+            example: '2021-02-01T20:15:00+01:00'
+        required:
+          - name
+          - type
+          - attendeeCapacity
+          - startingDate
+
+      update_course_dto:
+        type: object
+        properties:
+          _version:
+            $ref: '#/components/schemas/record_version'
+          name:
+            type: string
+            example: New Course
+          type:
+            $ref: '#/components/schemas/course_type'
+          attendeeCapacity:
+            type: integer
+            minimum: 0
+            example: 20
+          startingDate:
+            type: string
+            format: date-time
+            example: '2021-02-01T20:15:00+01:00'
+        required:
+          - _version
+
+      # registration schemas
+      registration_id:
+        type: integer
+        example: 1
+
+      registration_status:
+        type: string
+        enum: ['pending', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
+        example: pending
+
+      registration_action:
+        type: string
+        enum: ['reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'undoPay', 'refund', 'undoRefund']
+        example: confirm
+
+      registration_action_params:
+        type: object
+        properties:
+          _version:
+            $ref: '#/components/schemas/record_version'
+          notificationOptions:
+            $ref: '#/components/schemas/notification_options'
+        required:
+          - _version
+
+      registration:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/registration_id'
+          _version:
+            $ref: '#/components/schemas/record_version'
+          _deletedAt:
+            type: string
+            format: date-time
+          createdAt:
+            type: string
+            format: date-time
+            example: '2021-01-01T20:15:00+01:00'
+          updatedAt:
+            type: string
+            format: date-time
+            example: '2021-01-01T20:15:00+01:00'
+          relatedRegistrationId:
+            $ref: '#/components/schemas/registration_id'
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          billingAddress:
+            $ref: '#/components/schemas/address'
+          status:
+            $ref: '#/components/schemas/registration_status'
+          note:
+            type: string
+          attendees:
             type: array
             items:
               $ref: '#/components/schemas/attendee'
+          comments:
+            type: array
+            items:
+              $ref: '#/components/schemas/registration_comment'
+        required:
+          - id
+          - _version
+          - createdAt
+          - updatedAt
+          - courseId
+          - firstName
+          - lastName
+          - email
+          - billingAddress
+          - status
+          - attendees
 
-    course_stats:
-      description: stats for course
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/course_stats'
+      create_registration_dto:
+        type: object
+        properties:
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          note:
+            type: string
+          billingAddress:
+            $ref: '#/components/schemas/address'
+        required:
+          - courseId
+          - firstName
+          - lastName
+          - email
+          - billingAddress
 
-    registration_counts:
-      description: registration counts for course
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/registration_counts'
+      update_registration_dto:
+        type: object
+        properties:
+          _version:
+            $ref: '#/components/schemas/record_version'
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          note:
+            type: string
+          billingAddress:
+            $ref: '#/components/schemas/address'
+        required:
+          - _version
+      
+      # registration comment schemas
+      registration_comment_id:
+        type: integer
+        example: 1
 
+      registration_comment:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/registration_comment_id'
+          registrationId:
+            $ref: '#/components/schemas/registration_id'
+          user:
+            $ref: '#/components/schemas/user_subset'
+          createdAt:
+            type: string
+            format: date-time
+            example: '2021-01-01T20:15:00+01:00'
+          message:
+            type: string
+            example: 'Says she can''t pay until start of next month.'
+        required:
+          - id
+          - registrationId
+          - user
+          - createdAt
+          - message
 
-    # signup responses
-    signup:
-      description: created registrations
-      content:
-        application/json:
-          schema:
+      create_registration_comment_dto:
+        type: object
+        properties:
+          message:
+            type: string
+        required:
+          - message
+
+      # attendee schemas
+      attendee_id:
+        type: integer
+        example: 1
+
+      attendee:
+        type: object
+        properties:
+          id:
+            $ref: '#/components/schemas/attendee_id'
+          _version:
+            $ref: '#/components/schemas/record_version'
+          registrationId:
+            $ref: '#/components/schemas/registration_id'
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          address:
+            $ref: '#/components/schemas/address'
+        required:
+          - id
+          - _version
+          - registrationId
+          - firstName
+          - lastName
+          - email
+
+      create_attendee_dto:
+        type: object
+        properties:
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          address:
+            $ref: '#/components/schemas/address'
+        required:
+          - firstName
+          - lastName
+          - email
+
+      update_attendee_dto:
+        type: object
+        properties:
+          _version:
+            $ref: '#/components/schemas/record_version'
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          address:
+            $ref: '#/components/schemas/address'
+        required:
+          - _version
+
+      # signup schemas
+      signup_billing_dto: 
+        type: object
+        properties:
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          note:
+            type: string
+          address:
+            $ref: '#/components/schemas/address'
+        required:
+          - firstName
+          - lastName
+          - email
+          - phoneNumber
+          - address
+
+      signup_attendee_dto:
+        type: object
+        properties:
+          firstName:
+            type: string
+            example: John
+          lastName:
+            type: string
+            example: Doe
+          email:
+            type: string
+            format: email
+            example: john.doe@example.com
+          isBilledSeparately:
+            type: boolean
+          phoneNumber:
+            type: string
+            example: '(+49) 0555 1234 1234'
+          address:
+            $ref: '#/components/schemas/address'
+        required:
+          - firstName
+          - lastName
+          - email
+          - isBilledSeparately
+
+      submit_signup_dto:
+        type: object
+        properties:
+          courseId:
+            $ref: '#/components/schemas/course_id'
+          acceptTerms:
+            type: boolean
+          billing:
+            $ref: '#/components/schemas/signup_billing_dto'
+          attendees:
+            type: array
+            items:
+              $ref: '#/components/schemas/signup_attendee_dto'
+        required:
+          - courseId
+          - acceptTerms
+          - billing
+          - attendees
+              
+      # response schemas
+      paginated_registrations_response:
+        type: object
+        properties:
+          items:
             type: array
             items:
               $ref: '#/components/schemas/registration'
+          pagination:
+            $ref: '#/components/schemas/pagination'
+        required:
+          - items
+          - pagination
 
-  schemas:
-    # value objects and types
-    record_version:
-      type: integer
-      minimum: 0
-
-    country_code:
-      type: string
-      enum: ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV', 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO', 'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU', 'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'TP', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ', 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE', 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU', 'GT', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA', 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ', 'IE', 'IL', 'IT', 'JM', 'JP', 'JO', 'KZ', 'KE', 'KI', 'KP', 'KR', 'KV', 'KW', 'KG', 'LA', 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU', 'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT', 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD', 'MC', 'MN', 'MS', 'ME', 'MA', 'MZ', 'MM', 'NA', 'NR', 'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG', 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS', 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT', 'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN', 'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN', 'RS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO', 'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ', 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC', 'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY', 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH', 'YE', 'ZM', 'ZW']
-      example: DE
-
-    money:
-      type: object
-      properties:
-        amount:
-          type: integer
-          example: 100
-        currency:
-          $ref: '#/components/schemas/currency_code'
-      required:
-        - amount
-        - currency
-
-    currency_code:
-      type: string
-      enum: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY', 'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYI', 'UYU', 'UYW', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'XSU', 'YER', 'ZAR', 'ZMW', 'ZWL']
-      example: 'EUR'
-
-    vat_rate:
-      type: string
-      pattern: '^(100|\d{1,2})(\.\d{1,4})?'
-      example: '19.00'
-
-    address:
-      type: object
-      properties:
-        companyName:
-          type: string
-          example: Acme Inc.
-        country:
-          $ref: '#/components/schemas/country_code'
-        city:
-          type: string
-          example: Berlin
-        postcode:
-          type: string
-          example: '12305'
-        address1:
-          type: string
-          example: Bahnhofstr. 51/2a
-        address2:
-          type: string
-        address3:
-          type: string
-      required:
-        - country
-        - city
-        - postcode
-        - address1
-  
-    # error schemas
-    http_error:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: int32
-          example: 401
-        name:
-          type: string
-          example: 'Unauthorized'
-        message:
-          type: string
-          example: 'Token expired'
-        # data:
-        #   type: object
-      required:
-        - status
-        - message
-        
-    http_error_validation_failed:
-      type: object
-      properties:
-        status:
-          type: integer
-          format: int32
-          example: 422
-        name:
-          type: string
-          example: 'Unprocessable Entity'
-        message:
-          type: string
-          example: 'invalid request data'
-        validationErrors:
-          type: array
+      paginated_registration_comments_response:
+        type: object
+        properties:
           items:
-            $ref: '#/components/schemas/validation_error'
-      required:
-        - status
-        - validationErrors
+            type: array
+            items:
+              $ref: '#/components/schemas/registration_comment'
+          pagination:
+            $ref: '#/components/schemas/pagination'
+        required:
+          - items
+          - pagination
 
-    validation_error:
-      type: object
-      properties:
-        path:
-          type: string
-          example: 'address.country'
-        constraints:
-          type: array
+      paginated_courses_response:
+        type: object
+        properties:
           items:
-            type: object
-            properties:
-              type:
-                type: string
-                example: 'isEnum'
-              message:
-                type: string
-                example: 'value "Deutschland" is not a valid country code'
-            required:
-              - type
-              - message            
+            type: array
+            items:
+              $ref: '#/components/schemas/course'
+          pagination:
+            $ref: '#/components/schemas/pagination'
+        required:
+          - items
+          - pagination
 
-    entity_id:
-      type: integer
-      example: 1
+      pagination:
+        type: object
+        properties:
+          itemsTotal:
+            type: integer
+            example: 82
+          pagesTotal:
+            type: integer
+            example: 5
+          page:
+            type: integer
+            example: 1
+          perPage:
+            type: integer
+            example: 20
 
-    # user schemas
-    user_id:
-      type: string
-      example: '1'
-
-    user_subset:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/user_id'
-        name:
-          type: string
-          example: 'John Doe'
-      required:
-        - id
-        - name
-
-    # course schemas
-    course_id:
-      type: integer
-      example: 1
-
-    course_type:
-      type: string
-      enum: ['seminar', 'training_program']
-      example: seminar
-
-    counts_by_registration_status:
-      type: object
-      properties:
-        pending:
-          type: integer
-        confirmed:
-          type: integer
-        onWaitingList:
-          type: integer
-        placeOffered:
-          type: integer
-        cancelled:
-          type: integer
-        payed:
-          type: integer
-        refunded:
-          type: integer
-      example:
-        pending: 10
-        confirmed: 20
-        placeOffered: 3
-        onWaitingList: 12
-        cancelled: 0
-        payed: 2
-        refunded: 0
-      required:
-        - pending
-        - confirmed
-        - onWaitingList
-        - placeOffered
-        - cancelled
-        - payed
-        - refunded
-
-    course_stats:
-      type: object
-      properties:
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        attendees:
-          $ref: '#/components/schemas/attendee_stats'
-        registrations:
-          $ref: '#/components/schemas/registration_stats'
-      required:
-        - courseId
-        - attendees
-        - registrations
-
-    attendee_stats:
-      type: object
-      properties:
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        limit:
-          type: number
-        available: 
-          type: number
-        total:
-          type: integer
-        byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
-      required:
-        - courseId
-        - limit
-        - available
-        - total
-        - byStatus
-
-    registration_stats:
-      type: object
-      properties:
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        total:
-          type: integer
-        byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
-      required:
-        - courseId
-        - total
-        - byStatus
-
-    registration_counts:
-      type: object
-      properties:
-        total:
-          type: integer
-        byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
-      required:
-        - total
-        - byStatus
-
-
-    course_expense_id:
-      type: integer
-      example: 1
-
-    course_expense:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/course_expense_id'
-        _version:
-          $ref: '#/components/schemas/record_version'
-        name:
-          type: string
-          example: Catering
-        price:
-          $ref: '#/components/schemas/money'
-        vatRate:
-          $ref: '#/components/schemas/vat_rate'
-      required:
-        - id
-        - _version
-        - name
-        - price
-        - vatRate
-
-    create_course_expense_dto:
-      type: object
-      properties:
-        name:
-          type: string
-          example: Catering
-        price:
-          $ref: '#/components/schemas/money'
-        vatRate:
-          $ref: '#/components/schemas/vat_rate'
-      required:
-        - name
-        - price
-        - vatRate
-
-    update_course_expense_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        name:
-          type: string
-          example: Catering
-        price:
-          $ref: '#/components/schemas/money'
-        vatRate:
-          $ref: '#/components/schemas/vat_rate'
-      required:
-        - _version
-    
-    course:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/course_id'
-        _version:
-          $ref: '#/components/schemas/record_version'
-        _deletedAt:
-          type: string
-          format: date-time
-        name:
-          type: string
-          example: Medicinal Herbs
-        type:
-          $ref: '#/components/schemas/course_type'
-        attendeeCapacity:
-          type: integer
-          minimum: 0
-          example: 20
-        stats:
-          $ref: '#/components/schemas/course_stats'
-        createdAt:
-          type: string
-          format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        updatedAt:
-          type: string
-          format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        startingDate:
-          type: string
-          format: date-time
-          example: '2021-02-01T20:15:00+01:00'
-        expenses:
-          type: array
-          items:
-            $ref: '#/components/schemas/course_expense'
-      required:
-        - id
-        - _version
-        - name
-        - type
-        - attendeeCapacity
-        - createdAt
-        - updatedAt
-        - startingDate
-        - expenses
-    
-    create_course_dto:
-      type: object
-      properties:
-        name:
-          type: string
-          example: New Course
-        type:
-          $ref: '#/components/schemas/course_type'
-        attendeeCapacity:
-          type: integer
-          minimum: 0
-          example: 20
-        startingDate:
-          type: string
-          format: date-time
-          example: '2021-02-01T20:15:00+01:00'
-      required:
-        - name
-        - type
-        - attendeeCapacity
-        - startingDate
-
-    update_course_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        name:
-          type: string
-          example: New Course
-        type:
-          $ref: '#/components/schemas/course_type'
-        attendeeCapacity:
-          type: integer
-          minimum: 0
-          example: 20
-        startingDate:
-          type: string
-          format: date-time
-          example: '2021-02-01T20:15:00+01:00'
-      required:
-        - _version
-
-    # registration schemas
-    registration_id:
-      type: integer
-      example: 1
-
-    registration_status:
-      type: string
-      enum: ['pending', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
-      example: pending
-
-    registration_action:
-      type: string
-      enum: ['reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'undoPay', 'refund', 'undoRefund']
-      example: confirm
-
-    registration_action_params:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        notificationOptions:
-          $ref: '#/components/schemas/notification_options'
-      required:
-        - _version
-
-    registration:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/registration_id'
-        _version:
-          $ref: '#/components/schemas/record_version'
-        _deletedAt:
-          type: string
-          format: date-time
-        createdAt:
-          type: string
-          format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        updatedAt:
-          type: string
-          format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        relatedRegistrationId:
-          $ref: '#/components/schemas/registration_id'
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        billingAddress:
-          $ref: '#/components/schemas/address'
-        status:
-          $ref: '#/components/schemas/registration_status'
-        note:
-          type: string
-        attendees:
-          type: array
-          items:
-            $ref: '#/components/schemas/attendee'
-        comments:
-          type: array
-          items:
-            $ref: '#/components/schemas/registration_comment'
-      required:
-        - id
-        - _version
-        - createdAt
-        - updatedAt
-        - courseId
-        - firstName
-        - lastName
-        - email
-        - billingAddress
-        - status
-        - attendees
-
-    create_registration_dto:
-      type: object
-      properties:
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        note:
-          type: string
-        billingAddress:
-          $ref: '#/components/schemas/address'
-      required:
-        - courseId
-        - firstName
-        - lastName
-        - email
-        - billingAddress
-
-    update_registration_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        note:
-          type: string
-        billingAddress:
-          $ref: '#/components/schemas/address'
-      required:
-        - _version
-    
-    # registration comment schemas
-    registration_comment_id:
-      type: integer
-      example: 1
-
-    registration_comment:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/registration_comment_id'
-        registrationId:
-          $ref: '#/components/schemas/registration_id'
-        user:
-          $ref: '#/components/schemas/user_subset'
-        createdAt:
-          type: string
-          format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        message:
-          type: string
-          example: 'Says she can''t pay until start of next month.'
-      required:
-        - id
-        - registrationId
-        - user
-        - createdAt
-        - message
-
-    create_registration_comment_dto:
-      type: object
-      properties:
-        message:
-          type: string
-      required:
-        - message
-
-    # attendee schemas
-    attendee_id:
-      type: integer
-      example: 1
-
-    attendee:
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/attendee_id'
-        _version:
-          $ref: '#/components/schemas/record_version'
-        registrationId:
-          $ref: '#/components/schemas/registration_id'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - id
-        - _version
-        - registrationId
-        - firstName
-        - lastName
-        - email
-
-    create_attendee_dto:
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - firstName
-        - lastName
-        - email
-
-    update_attendee_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - _version
-
-    # signup schemas
-    signup_billing_dto: 
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        note:
-          type: string
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - firstName
-        - lastName
-        - email
-        - phoneNumber
-        - address
-
-    signup_attendee_dto:
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        isBilledSeparately:
-          type: boolean
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - firstName
-        - lastName
-        - email
-        - isBilledSeparately
-
-    submit_signup_dto:
-      type: object
-      properties:
-        courseId:
-          $ref: '#/components/schemas/course_id'
-        acceptTerms:
-          type: boolean
-        billing:
-          $ref: '#/components/schemas/signup_billing_dto'
-        attendees:
-          type: array
-          items:
-            $ref: '#/components/schemas/signup_attendee_dto'
-      required:
-        - courseId
-        - acceptTerms
-        - billing
-        - attendees
-            
-    # response schemas
-    paginated_registrations_response:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/registration'
-        pagination:
-          $ref: '#/components/schemas/pagination'
-      required:
-        - items
-        - pagination
-
-    paginated_registration_comments_response:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/registration_comment'
-        pagination:
-          $ref: '#/components/schemas/pagination'
-      required:
-        - items
-        - pagination
-
-    paginated_courses_response:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/course'
-        pagination:
-          $ref: '#/components/schemas/pagination'
-      required:
-        - items
-        - pagination
-
-    pagination:
-      type: object
-      properties:
-        itemsTotal:
-          type: integer
-          example: 82
-        pagesTotal:
-          type: integer
-          example: 5
-        page:
-          type: integer
-          example: 1
-        perPage:
-          type: integer
-          example: 20
-
-    # other schemas
-    notification_options:
-      type: object
-      properties:
-        enabled:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: 'Dear attendee, your registration was accepted.'
+      # other schemas
+      notification_options:
+        type: object
+        properties:
+          enabled:
+            type: boolean
+            example: true
+          message:
+            type: string
+            example: 'Dear attendee, your registration was accepted.'

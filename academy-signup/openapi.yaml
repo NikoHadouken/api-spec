@@ -31,6 +31,7 @@ paths:
   /signup:
     post:
       security:
+        - none: []
       summary: submit registration for academy course
       description: Customer signup request
       operationId: submitCourseSignup
@@ -621,6 +622,9 @@ paths:
 
 components:
   securitySchemes:
+    none:
+      type: none
+      description: Publicly accessible (no authentication needed)
     bearer_auth:
       type: http
       scheme: bearer

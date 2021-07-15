@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  version: 0.0.1-draft
+  version: 0.0.3-draft
   title: Academy Signup
-  description: | 
+  description: |
     ![storl](https://www.storl.de/wp-content/uploads/2021/03/Element-38-400x77.png)
 
     **Academy Signup** api
@@ -12,9 +12,9 @@ servers:
     url: https://virtserver.swaggerhub.com/Hadouken-Test/academy_signup/0.0.1-draft
   - description: production
     url: https://api.storl.de/academy-signup/v1
-  - description: development
-    url: '/'
-    
+  - description: staging
+    url: https://api.staging.storl.de/academy-signup/v1
+
 tags:
   - name: course
     description: Everything about academy courses
@@ -42,14 +42,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/submit_signup_dto'
+              $ref: "#/components/schemas/signup_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/signup'
-        '412':
-          $ref: '#/components/responses/error_missing_reference'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "201":
+          $ref: "#/components/responses/signup"
+        "412":
+          $ref: "#/components/responses/error_missing_reference"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   # course paths
   /courses:
@@ -60,15 +60,15 @@ paths:
       tags:
         - course
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/courses_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/course_types'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/per_page"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/courses_order_by"
+        - $ref: "#/components/parameters/keyword"
+        - $ref: "#/components/parameters/course_types"
       responses:
-        '200':
-          $ref: '#/components/responses/course_list'
+        "200":
+          $ref: "#/components/responses/course_list"
     post:
       summary: create course
       description: Adds a new course to the system
@@ -80,12 +80,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_course_dto'
+              $ref: "#/components/schemas/create_course_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/course'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "201":
+          $ref: "#/components/responses/course"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   /courses/trashed:
     get:
@@ -93,17 +93,17 @@ paths:
       description: Retrieve courses that got soft-deleted
       operationId: list_trashed_courses
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/courses_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/course_types'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/per_page"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/courses_order_by"
+        - $ref: "#/components/parameters/keyword"
+        - $ref: "#/components/parameters/course_types"
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course_list'
+        "200":
+          $ref: "#/components/responses/course_list"
     delete:
       summary: delete all trashed courses
       description: Delete all trashed courses
@@ -111,15 +111,15 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/deleted_ids'
+        "200":
+          $ref: "#/components/responses/deleted_ids"
 
   /courses/trashed/{courseId}:
     parameters:
       - in: path
         name: courseId
         schema:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         required: true
         description: Id of the course
     get:
@@ -129,10 +129,10 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     patch:
       summary: restore trashed courses
       description: Restore courses that got soft-deleted
@@ -140,10 +140,10 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     delete:
       summary: permanently delete course
       description: permanently delete a trashed course
@@ -151,18 +151,17 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
   /courses/{courseId}:
     parameters:
       - in: path
         name: courseId
         schema:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         required: true
         description: Id of the course
     get:
@@ -172,10 +171,10 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     patch:
       summary: update course
       description: apply changes to a course
@@ -183,40 +182,36 @@ paths:
       tags:
         - course
       requestBody:
-        description: course data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/update_course_dto'
+        $ref: "#/components/requestBodies/json_patch"
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "412":
+          $ref: "#/components/responses/error_concurrency"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
     delete:
       parameters:
-        - $ref: '#/components/parameters/permanent'
+        - $ref: "#/components/parameters/permanent"
       summary: trash or permanently delete course
       description: perform a soft-delete on a course, or hard delete if parameter is set
       operationId: delete_course
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
   /courses/{courseId}/expenses:
     parameters:
       - in: path
         name: courseId
         schema:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         required: true
         description: Id of the course
     post:
@@ -230,29 +225,29 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_course_expense_dto'
+              $ref: "#/components/schemas/create_course_expense_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_missing_reference'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "201":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "412":
+          $ref: "#/components/responses/error_missing_reference"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   /courses/{courseId}/expenses/{expenseId}:
     parameters:
       - in: path
         name: courseId
         schema:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         required: true
         description: Id of the course
       - in: path
         name: expenseId
         schema:
-          $ref: '#/components/schemas/course_expense_id'
+          $ref: "#/components/schemas/course_expense_id"
         required: true
         description: Id of the expense item
     patch:
@@ -262,20 +257,16 @@ paths:
       tags:
         - course
       requestBody:
-        description: course expense data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/update_course_expense_dto'
+        $ref: "#/components/requestBodies/json_patch"
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "412":
+          $ref: "#/components/responses/error_concurrency"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
     delete:
       summary: permanently delete course expense
       description: permanently delete a course expense
@@ -283,10 +274,10 @@ paths:
       tags:
         - course
       responses:
-        '200':
-          $ref: '#/components/responses/course'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/course"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
   # registration paths
   /registrations:
@@ -297,16 +288,16 @@ paths:
       tags:
         - registration
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_ids'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/registrations_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/registration_statuses'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/per_page"
+        - $ref: "#/components/parameters/course_ids"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/registrations_order_by"
+        - $ref: "#/components/parameters/keyword"
+        - $ref: "#/components/parameters/registration_statuses"
       responses:
-        '200':
-          $ref: '#/components/responses/registration_list'
+        "200":
+          $ref: "#/components/responses/registration_list"
     post:
       summary: create registration
       description: Adds a registration to the system
@@ -318,12 +309,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_registration_dto'
+              $ref: "#/components/schemas/create_registration_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/registration'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "201":
+          $ref: "#/components/responses/registration"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   /registrations/counts:
     get:
@@ -333,8 +324,8 @@ paths:
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration_counts'
+        "200":
+          $ref: "#/components/responses/registration_counts"
 
   /registrations/trashed:
     get:
@@ -342,36 +333,36 @@ paths:
       description: Retrieve registrations that got soft-deleted
       operationId: list_trashed_registrations
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
-        - $ref: '#/components/parameters/course_ids'
-        - $ref: '#/components/parameters/order'
-        - $ref: '#/components/parameters/registrations_order_by'
-        - $ref: '#/components/parameters/keyword'
-        - $ref: '#/components/parameters/registration_statuses'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/per_page"
+        - $ref: "#/components/parameters/course_ids"
+        - $ref: "#/components/parameters/order"
+        - $ref: "#/components/parameters/registrations_order_by"
+        - $ref: "#/components/parameters/keyword"
+        - $ref: "#/components/parameters/registration_statuses"
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration_list'
+        "200":
+          $ref: "#/components/responses/registration_list"
     delete:
       summary: delete all trashed registrations
       description: Delete all trashed registrations
       operationId: delete_all_trashed_registrations
       parameters:
-        - $ref: '#/components/parameters/course_ids'
+        - $ref: "#/components/parameters/course_ids"
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/deleted_ids'
+        "200":
+          $ref: "#/components/responses/deleted_ids"
 
   /registrations/trashed/{regId}:
     parameters:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
     get:
@@ -381,10 +372,10 @@ paths:
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     patch:
       summary: restore trashed registrations
       description: Restore registrations that got soft-deleted
@@ -392,10 +383,10 @@ paths:
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     delete:
       summary: permanently delete registration
       description: permanently delete a trashed registration
@@ -403,17 +394,17 @@ paths:
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
   /registrations/{regId}:
     parameters:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
     get:
@@ -423,10 +414,10 @@ paths:
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     patch:
       summary: update registration
       description: apply changes to a registration
@@ -434,48 +425,38 @@ paths:
       tags:
         - registration
       requestBody:
-        description: registration data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/update_registration_dto'
+        $ref: "#/components/requestBodies/json_patch"
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "412":
+          $ref: "#/components/responses/error_concurrency"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
     delete:
       parameters:
-        - $ref: '#/components/parameters/permanent'
+        - $ref: "#/components/parameters/permanent"
       summary: trash or permanently delete registration
       description: perform a soft-delete on a registration, or hard delete if parameter is set
       operationId: delete_registration
       tags:
         - registration
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
-  /registrations/{regId}/actions/{action}:
+  /registrations/{regId}/action:
     parameters:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
-      - in: path
-        name: action
-        schema:
-          $ref: '#/components/schemas/registration_action'
-        required: true
-        description: Action to perform on registration
     post:
       summary: perform action
       description: Perform action on registration
@@ -487,18 +468,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/registration_action_params'
+              $ref: "#/components/schemas/registration_action_params"
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '409':
-          $ref: '#/components/responses/error_conflict'
-        '412':
-          $ref: '#/components/responses/error_concurrency'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "409":
+          $ref: "#/components/responses/error_conflict"
+        "412":
+          $ref: "#/components/responses/error_concurrency"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   # registration comment paths
   /registrations/{regId}/comments:
@@ -506,7 +487,7 @@ paths:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
     get:
@@ -516,13 +497,13 @@ paths:
       tags:
         - registration
       parameters:
-        - $ref: '#/components/parameters/page'
-        - $ref: '#/components/parameters/per_page'
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/per_page"
       responses:
-        '200':
-          $ref: '#/components/responses/registration_comment_list'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration_comment_list"
+        "404":
+          $ref: "#/components/responses/error_not_found"
     post:
       summary: create comment
       description: Adds a new comment to a registration
@@ -534,15 +515,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_registration_comment_dto'
+              $ref: "#/components/schemas/create_registration_comment_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/registration_comment'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-  
+        "201":
+          $ref: "#/components/responses/registration_comment"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   # attendee paths
   /registrations/{regId}/attendees:
@@ -550,7 +530,7 @@ paths:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
     post:
@@ -564,27 +544,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/create_attendee_dto'
+              $ref: "#/components/schemas/create_attendee_dto"
       responses:
-        '201':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "201":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
 
   /registrations/{regId}/attendees/{attendeeId}:
     parameters:
       - in: path
         name: regId
         schema:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         required: true
         description: Id of the registration
       - in: path
         name: attendeeId
         schema:
-          $ref: '#/components/schemas/attendee_id'
+          $ref: "#/components/schemas/attendee_id"
         required: true
         description: Id of the attendee
     patch:
@@ -594,41 +574,16 @@ paths:
       tags:
         - attendee
       requestBody:
-        description: attendee data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/update_attendee_dto'
+        $ref: "#/components/requestBodies/json_patch"
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '409':
-          $ref: '#/components/responses/error_conflict'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
-    put:
-      summary: set attendee
-      description: override attendee
-      operationId: set_attendee
-      tags:
-        - attendee
-      requestBody:
-        description: attendee data
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/create_attendee_dto'
-      responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
-        '409':
-          $ref: '#/components/responses/error_conflict'
-        '422':
-          $ref: '#/components/responses/error_validation_failed'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "409":
+          $ref: "#/components/responses/error_conflict"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
     delete:
       summary: delete attendee
       description: permanently delete a attendee
@@ -636,10 +591,10 @@ paths:
       tags:
         - attendee
       responses:
-        '200':
-          $ref: '#/components/responses/registration'
-        '404':
-          $ref: '#/components/responses/error_not_found'
+        "200":
+          $ref: "#/components/responses/registration"
+        "404":
+          $ref: "#/components/responses/error_not_found"
 
 components:
   securitySchemes:
@@ -663,7 +618,7 @@ components:
         default: 1
       required: false
     per_page:
-      description: 'num of items per page'
+      description: "num of items per page"
       in: query
       name: perPage
       schema:
@@ -687,7 +642,7 @@ components:
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/entity_id'
+          $ref: "#/components/schemas/entity_id"
       required: false
     permanent:
       description: force permanent delete instead of moving to trash
@@ -702,7 +657,7 @@ components:
       in: query
       name: version
       schema:
-        $ref: '#/components/schemas/record_version'
+        $ref: "#/components/schemas/entity_version"
       required: true
     keyword:
       description: search by keyword
@@ -718,7 +673,7 @@ components:
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/registration_status'
+          $ref: "#/components/schemas/registration_status"
       required: false
     course_types:
       description: filter courses by type
@@ -727,7 +682,7 @@ components:
       schema:
         type: array
         items:
-          $ref: '#/components/schemas/course_type'
+          $ref: "#/components/schemas/course_type"
       required: false
     courses_order_by:
       description: order course items by fields
@@ -735,7 +690,7 @@ components:
       name: orderBy
       schema:
         type: string
-        enum: ['createdAt', 'startingDate', 'type', 'name']
+        enum: ["createdAt", "startingDate", "type", "name"]
         example: createdAt
       required: false
     registrations_order_by:
@@ -744,7 +699,7 @@ components:
       name: orderBy
       schema:
         type: string
-        enum: ['createdAt', 'status']
+        enum: ["createdAt", "status"]
         example: createdAt
       required: false
     order:
@@ -753,64 +708,70 @@ components:
       name: order
       schema:
         type: string
-        enum: ['asc', 'desc']
+        enum: ["asc", "desc"]
         example: desc
       required: false
 
-  # requestBodies:
+  requestBodies:
+    json_patch:
+      description: "json patch"
+      content:
+        application/json-patch+json:
+          schema:
+            $ref: "#/components/schemas/json_patch_dto"
 
   responses:
     # error responses
     error_not_found:
-      description: 'error: not found'
+      description: "error: not found"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/http_error'
+            $ref: "#/components/schemas/http_error"
           example:
             status: 404
-            name: 'Not Found'
-            message: 'Entity was not found'
+            name: "Not Found"
+            message: "Entity was not found"
 
     error_conflict:
-      description: 'error: conflict'
+      description: "error: conflict"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/http_error'
+            $ref: "#/components/schemas/http_error"
           example:
             status: 409
-            name: 'error_conflict'
-            message: 'conflict with the current state of the resource'
+            name: "error_conflict"
+            message: "conflict with the current state of the resource"
 
     error_concurrency:
-      description: 'error: concurrency'
+      description: "error: concurrency"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/http_error'
+            $ref: "#/components/schemas/http_error"
           example:
             status: 412
-            name: 'Precondition failed'
-            message: 'optimistic currency control prevented update of outdated ressource'
+            name: "Precondition failed"
+            message: "optimistic currency control prevented update of outdated ressource"
 
     error_missing_reference:
-      description: 'error: concurrency'
+      description: "error: concurrency"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/http_error'
+            $ref: "#/components/schemas/http_error"
           example:
             status: 412
-            name: 'Precondition failed'
-            message: 'the course you refered to does not exist'
+            name: "Precondition failed"
+            message: "the course you refered to does not exist"
 
     error_validation_failed:
-      description: 'error: validation failed'
+      description: "error: validation failed"
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/http_error_validation_failed'
+            $ref: "#/components/schemas/http_error_validation_failed"
 
     # course responses
     course:
@@ -818,7 +779,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/course'
+            $ref: "#/components/schemas/course"
       headers:
         Location:
           description: URI of the course
@@ -831,7 +792,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/paginated_courses_response'
+            $ref: "#/components/schemas/paginated_courses_response"
 
     deleted_ids:
       description: list of deleted entity ids
@@ -840,7 +801,7 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/entity_id'
+              $ref: "#/components/schemas/entity_id"
 
     # registration responses
     registration:
@@ -848,7 +809,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/registration'
+            $ref: "#/components/schemas/registration"
       headers:
         Location:
           description: URI of the registration
@@ -859,28 +820,35 @@ components:
         course:
           operationId: courseId
           parameters:
-           id: $response.body#/courseId
+            id: $response.body#/courseId
 
     registration_list:
       description: list of registrations
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/paginated_registrations_response'
-            
+            $ref: "#/components/schemas/paginated_registrations_response"
+
     registration_comment:
       description: registration comment
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/registration_comment'
+            $ref: "#/components/schemas/registration_comment"
 
     registration_comment_list:
       description: list of registration comments
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/paginated_registration_comments_response'
+            $ref: "#/components/schemas/paginated_registration_comments_response"
+
+    registration_counts:
+      description: registration counts for course
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/registration_counts"
 
     # attendee responses
     attendee:
@@ -888,7 +856,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/attendee'
+            $ref: "#/components/schemas/attendee"
       headers:
         Location:
           description: URI of the attendee
@@ -903,22 +871,14 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/attendee'
+              $ref: "#/components/schemas/attendee"
 
     course_stats:
       description: stats for course
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/course_stats'
-
-    registration_counts:
-      description: registration counts for course
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/registration_counts'
-
+            $ref: "#/components/schemas/course_stats"
 
     # signup responses
     signup:
@@ -928,68 +888,17 @@ components:
           schema:
             type: array
             items:
-              $ref: '#/components/schemas/registration'
+              $ref: "#/components/schemas/registration"
 
   schemas:
     # value objects and types
-    record_version:
+    entity_version:
       type: integer
       minimum: 0
 
-    country_code:
-      type: string
-      enum: ['AF', 'AL', 'DZ', 'AS', 'AD', 'AO', 'AI', 'AQ', 'AG', 'AR', 'AM', 'AW', 'AU', 'AT', 'AZ', 'BS', 'BH', 'BD', 'BB', 'BY', 'BE', 'BZ', 'BJ', 'BM', 'BT', 'BO', 'BA', 'BW', 'BV', 'BR', 'IO', 'BN', 'BG', 'BF', 'BI', 'KH', 'CM', 'CA', 'CV', 'KY', 'CF', 'TD', 'CL', 'CN', 'CX', 'CC', 'CO', 'KM', 'CG', 'CD', 'CK', 'CR', 'CI', 'HR', 'CU', 'CY', 'CZ', 'DK', 'DJ', 'DM', 'DO', 'TP', 'EC', 'EG', 'SV', 'GQ', 'ER', 'EE', 'ET', 'FK', 'FO', 'FJ', 'FI', 'FR', 'GF', 'PF', 'TF', 'GA', 'GM', 'GE', 'DE', 'GH', 'GI', 'GR', 'GL', 'GD', 'GP', 'GU', 'GT', 'GN', 'GW', 'GY', 'HT', 'HM', 'VA', 'HN', 'HK', 'HU', 'IS', 'IN', 'ID', 'IR', 'IQ', 'IE', 'IL', 'IT', 'JM', 'JP', 'JO', 'KZ', 'KE', 'KI', 'KP', 'KR', 'KV', 'KW', 'KG', 'LA', 'LV', 'LB', 'LS', 'LR', 'LY', 'LI', 'LT', 'LU', 'MO', 'MK', 'MG', 'MW', 'MY', 'MV', 'ML', 'MT', 'MH', 'MQ', 'MR', 'MU', 'YT', 'MX', 'FM', 'MD', 'MC', 'MN', 'MS', 'ME', 'MA', 'MZ', 'MM', 'NA', 'NR', 'NP', 'NL', 'AN', 'NC', 'NZ', 'NI', 'NE', 'NG', 'NU', 'NF', 'MP', 'NO', 'OM', 'PK', 'PW', 'PS', 'PA', 'PG', 'PY', 'PE', 'PH', 'PN', 'PL', 'PT', 'PR', 'QA', 'RE', 'RO', 'RU', 'RW', 'SH', 'KN', 'LC', 'PM', 'VC', 'WS', 'SM', 'ST', 'SA', 'SN', 'RS', 'SC', 'SL', 'SG', 'SK', 'SI', 'SB', 'SO', 'ZA', 'GS', 'ES', 'LK', 'SD', 'SR', 'SJ', 'SZ', 'SE', 'CH', 'SY', 'TW', 'TJ', 'TZ', 'TH', 'TG', 'TK', 'TO', 'TT', 'TN', 'TR', 'TM', 'TC', 'TV', 'UG', 'UA', 'AE', 'GB', 'US', 'UM', 'UY', 'UZ', 'VU', 'VE', 'VN', 'VG', 'VI', 'WF', 'EH', 'YE', 'ZM', 'ZW']
-      example: DE
 
-    money:
-      type: object
-      properties:
-        amount:
-          type: integer
-          example: 100
-        currency:
-          $ref: '#/components/schemas/currency_code'
-      required:
-        - amount
-        - currency
 
-    currency_code:
-      type: string
-      enum: ['AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AUD', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BOV', 'BRL', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CAD', 'CDF', 'CHE', 'CHF', 'CHW', 'CLF', 'CLP', 'CNY', 'COP', 'COU', 'CRC', 'CUC', 'CUP', 'CVE', 'CZK', 'DJF', 'DKK', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'EUR', 'FJD', 'FKP', 'GBP', 'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HKD', 'HNL', 'HRK', 'HTG', 'HUF', 'IDR', 'ILS', 'INR', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'JPY', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KRW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MXN', 'MXV', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NOK', 'NPR', 'NZD', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PLN', 'PYG', 'QAR', 'RON', 'RSD', 'RUB', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SEK', 'SGD', 'SHP', 'SLL', 'SOS', 'SRD', 'SSP', 'STN', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYI', 'UYU', 'UYW', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XOF', 'XPF', 'XSU', 'YER', 'ZAR', 'ZMW', 'ZWL']
-      example: 'EUR'
 
-    vat_rate:
-      type: string
-      pattern: '^(100|\d{1,2})(\.\d{1,4})?'
-      example: '19.00'
-
-    address:
-      type: object
-      properties:
-        companyName:
-          type: string
-          example: Acme Inc.
-        country:
-          $ref: '#/components/schemas/country_code'
-        city:
-          type: string
-          example: Berlin
-        postcode:
-          type: string
-          example: '12305'
-        address1:
-          type: string
-          example: Bahnhofstr. 51/2a
-        address2:
-          type: string
-        address3:
-          type: string
-      required:
-        - country
-        - city
-        - postcode
-        - address1
-  
     # error schemas
     http_error:
       type: object
@@ -1000,16 +909,16 @@ components:
           example: 401
         name:
           type: string
-          example: 'Unauthorized'
+          example: "Unauthorized"
         message:
           type: string
-          example: 'Token expired'
+          example: "Token expired"
         # data:
         #   type: object
       required:
         - status
         - message
-        
+
     http_error_validation_failed:
       type: object
       properties:
@@ -1019,14 +928,14 @@ components:
           example: 422
         name:
           type: string
-          example: 'Unprocessable Entity'
+          example: "Unprocessable Entity"
         message:
           type: string
-          example: 'invalid request data'
+          example: "invalid request data"
         validationErrors:
           type: array
           items:
-            $ref: '#/components/schemas/validation_error'
+            $ref: "#/components/schemas/validation_error"
       required:
         - status
         - validationErrors
@@ -1036,7 +945,7 @@ components:
       properties:
         path:
           type: string
-          example: 'address.country'
+          example: "address.country"
         constraints:
           type: array
           items:
@@ -1044,13 +953,13 @@ components:
             properties:
               type:
                 type: string
-                example: 'isEnum'
+                example: "isEnum"
               message:
                 type: string
                 example: 'value "Deutschland" is not a valid country code'
             required:
               - type
-              - message            
+              - message
 
     entity_id:
       type: integer
@@ -1059,16 +968,16 @@ components:
     # user schemas
     user_id:
       type: string
-      example: '1'
+      example: "1"
 
     user_subset:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/user_id'
+          $ref: "#/components/schemas/user_id"
         name:
           type: string
-          example: 'John Doe'
+          example: "John Doe"
       required:
         - id
         - name
@@ -1080,52 +989,28 @@ components:
 
     course_type:
       type: string
-      enum: ['seminar', 'training_program']
+      enum: ["seminar", "training_program"]
       example: seminar
 
     counts_by_registration_status:
-      type: object
-      properties:
-        pending:
-          type: integer
-        confirmed:
-          type: integer
-        onWaitingList:
-          type: integer
-        placeOffered:
-          type: integer
-        cancelled:
-          type: integer
-        payed:
-          type: integer
-        refunded:
-          type: integer
-      example:
-        pending: 10
-        confirmed: 20
-        placeOffered: 3
-        onWaitingList: 12
-        cancelled: 0
-        payed: 2
-        refunded: 0
-      required:
-        - pending
-        - confirmed
-        - onWaitingList
-        - placeOffered
-        - cancelled
-        - payed
-        - refunded
+      type: array
+      items:
+        type: object
+        properties:
+          status:
+            $ref: "#/components/schemas/registration_status"
+          count:
+            type: integer
 
     course_stats:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         attendees:
-          $ref: '#/components/schemas/attendee_stats'
+          $ref: "#/components/schemas/attendee_stats"
         registrations:
-          $ref: '#/components/schemas/registration_stats'
+          $ref: "#/components/schemas/registration_stats"
       required:
         - courseId
         - attendees
@@ -1135,15 +1020,15 @@ components:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         limit:
           type: number
-        available: 
+        available:
           type: number
         total:
           type: integer
         byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
+          $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - courseId
         - limit
@@ -1155,11 +1040,11 @@ components:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         total:
           type: integer
         byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
+          $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - courseId
         - total
@@ -1171,11 +1056,10 @@ components:
         total:
           type: integer
         byStatus:
-          $ref: '#/components/schemas/counts_by_registration_status'
+          $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - total
         - byStatus
-
 
     course_expense_id:
       type: integer
@@ -1185,16 +1069,16 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/course_expense_id'
+          $ref: "#/components/schemas/course_expense_id"
         _version:
-          $ref: '#/components/schemas/record_version'
+          $ref: "#/components/schemas/entity_version"
         name:
           type: string
           example: Catering
         price:
-          $ref: '#/components/schemas/money'
+          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/money"
         vatRate:
-          $ref: '#/components/schemas/vat_rate'
+          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/vat_rate"
       required:
         - id
         - _version
@@ -1209,36 +1093,21 @@ components:
           type: string
           example: Catering
         price:
-          $ref: '#/components/schemas/money'
+          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/money"
         vatRate:
-          $ref: '#/components/schemas/vat_rate'
+          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/vat_rate"
       required:
         - name
         - price
         - vatRate
 
-    update_course_expense_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        name:
-          type: string
-          example: Catering
-        price:
-          $ref: '#/components/schemas/money'
-        vatRate:
-          $ref: '#/components/schemas/vat_rate'
-      required:
-        - _version
-    
     course:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         _version:
-          $ref: '#/components/schemas/record_version'
+          $ref: "#/components/schemas/entity_version"
         _deletedAt:
           type: string
           format: date-time
@@ -1246,29 +1115,29 @@ components:
           type: string
           example: Medicinal Herbs
         type:
-          $ref: '#/components/schemas/course_type'
+          $ref: "#/components/schemas/course_type"
         attendeeCapacity:
           type: integer
           minimum: 0
           example: 20
         stats:
-          $ref: '#/components/schemas/course_stats'
+          $ref: "#/components/schemas/course_stats"
         createdAt:
           type: string
           format: date-time
-          example: '2021-01-01T20:15:00+01:00'
+          example: "2021-01-01T20:15:00+01:00"
         updatedAt:
           type: string
           format: date-time
-          example: '2021-01-01T20:15:00+01:00'
+          example: "2021-01-01T20:15:00+01:00"
         startingDate:
           type: string
           format: date-time
-          example: '2021-02-01T20:15:00+01:00'
+          example: "2021-02-01T20:15:00+01:00"
         expenses:
           type: array
           items:
-            $ref: '#/components/schemas/course_expense'
+            $ref: "#/components/schemas/course_expense"
       required:
         - id
         - _version
@@ -1279,7 +1148,7 @@ components:
         - updatedAt
         - startingDate
         - expenses
-    
+
     create_course_dto:
       type: object
       properties:
@@ -1287,7 +1156,7 @@ components:
           type: string
           example: New Course
         type:
-          $ref: '#/components/schemas/course_type'
+          $ref: "#/components/schemas/course_type"
         attendeeCapacity:
           type: integer
           minimum: 0
@@ -1295,33 +1164,12 @@ components:
         startingDate:
           type: string
           format: date-time
-          example: '2021-02-01T20:15:00+01:00'
+          example: "2021-02-01T20:15:00+01:00"
       required:
         - name
         - type
         - attendeeCapacity
         - startingDate
-
-    update_course_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        name:
-          type: string
-          example: New Course
-        type:
-          $ref: '#/components/schemas/course_type'
-        attendeeCapacity:
-          type: integer
-          minimum: 0
-          example: 20
-        startingDate:
-          type: string
-          format: date-time
-          example: '2021-02-01T20:15:00+01:00'
-      required:
-        - _version
 
     # registration schemas
     registration_id:
@@ -1330,83 +1178,89 @@ components:
 
     registration_status:
       type: string
-      enum: ['pending', 'onWaitingList', 'placeOffered', 'confirmed', 'cancelled', 'payed', 'refunded']
+      enum:
+        [
+          "pending",
+          "on_waiting_list",
+          "place_offered",
+          "confirmed",
+          "cancelled",
+          "payed",
+          "refunded",
+        ]
       example: pending
 
     registration_action:
       type: string
-      enum: ['reset', 'putOnWait', 'offerPlace', 'confirm', 'reject', 'cancel', 'pay', 'undoPay', 'refund', 'undoRefund']
+      enum:
+        [
+          "reset",
+          "put_on_wait",
+          "offer_place",
+          "confirm",
+          "reject",
+          "cancel",
+          "pay",
+          "undo_pay",
+          "refund",
+          "undo_refund",
+        ]
       example: confirm
 
     registration_action_params:
       type: object
       properties:
         _version:
-          $ref: '#/components/schemas/record_version'
+          $ref: "#/components/schemas/entity_version"
+        action:
+          $ref: "#/components/schemas/registration_action"
         notificationOptions:
-          $ref: '#/components/schemas/notification_options'
+          $ref: "#/components/schemas/notification_options"
       required:
         - _version
+        - action
 
     registration:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         _version:
-          $ref: '#/components/schemas/record_version'
+          $ref: "#/components/schemas/entity_version"
         _deletedAt:
           type: string
           format: date-time
         createdAt:
           type: string
           format: date-time
-          example: '2021-01-01T20:15:00+01:00'
+          example: "2021-01-01T20:15:00+01:00"
         updatedAt:
           type: string
           format: date-time
-          example: '2021-01-01T20:15:00+01:00'
-        relatedRegistrationId:
-          $ref: '#/components/schemas/registration_id'
+          example: "2021-01-01T20:15:00+01:00"
         courseId:
-          $ref: '#/components/schemas/course_id'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        billingAddress:
-          $ref: '#/components/schemas/address'
+          $ref: "#/components/schemas/course_id"
+        billing:
+          $ref: "#/components/schemas/billing"
         status:
-          $ref: '#/components/schemas/registration_status'
+          $ref: "#/components/schemas/registration_status"
         note:
           type: string
         attendees:
           type: array
           items:
-            $ref: '#/components/schemas/attendee'
+            $ref: "#/components/schemas/attendee"
         comments:
           type: array
           items:
-            $ref: '#/components/schemas/registration_comment'
+            $ref: "#/components/schemas/registration_comment"
       required:
         - id
         - _version
         - createdAt
         - updatedAt
         - courseId
-        - firstName
-        - lastName
-        - email
-        - billingAddress
+        - billing
         - status
         - attendees
 
@@ -1414,56 +1268,43 @@ components:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/course_id'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
+          $ref: "#/components/schemas/course_id"
         note:
           type: string
-        billingAddress:
-          $ref: '#/components/schemas/address'
+        billing:
+          $ref: "#/components/schemas/billing"
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/create_attendee_dto'
       required:
         - courseId
-        - firstName
-        - lastName
-        - email
-        - billingAddress
+        - billing
 
-    update_registration_dto:
+    billing:
       type: object
       properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
         email:
           type: string
           format: email
           example: john.doe@example.com
-        phoneNumber:
+        phone:
           type: string
-          example: '(+49) 0555 1234 1234'
-        note:
+          example: "(+49) 0555 1234 1234"
+        vatId:
           type: string
-        billingAddress:
-          $ref: '#/components/schemas/address'
+          example: "1234 1234"
+        addressee:
+          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/addressee"
+        address:
+          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
       required:
-        - _version
-    
+        - email
+        - phone
+        - addressee
+        - address
+
+
     # registration comment schemas
     registration_comment_id:
       type: integer
@@ -1473,18 +1314,18 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/registration_comment_id'
+          $ref: "#/components/schemas/registration_comment_id"
         registrationId:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         user:
-          $ref: '#/components/schemas/user_subset'
+          $ref: "#/components/schemas/user_subset"
         createdAt:
           type: string
           format: date-time
-          example: '2021-01-01T20:15:00+01:00'
+          example: "2021-01-01T20:15:00+01:00"
         message:
           type: string
-          example: 'Says she can''t pay until start of next month.'
+          example: "Says she can't pay until start of next month."
       required:
         - id
         - registrationId
@@ -1509,11 +1350,11 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/attendee_id'
+          $ref: "#/components/schemas/attendee_id"
         _version:
-          $ref: '#/components/schemas/record_version'
+          $ref: "#/components/schemas/entity_version"
         registrationId:
-          $ref: '#/components/schemas/registration_id'
+          $ref: "#/components/schemas/registration_id"
         firstName:
           type: string
           example: John
@@ -1524,11 +1365,11 @@ components:
           type: string
           format: email
           example: john.doe@example.com
-        phoneNumber:
+        phone:
           type: string
-          example: '(+49) 0555 1234 1234'
+          example: "(+49) 0555 1234 1234"
         address:
-          $ref: '#/components/schemas/address'
+          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
       required:
         - id
         - _version
@@ -1550,67 +1391,17 @@ components:
           type: string
           format: email
           example: john.doe@example.com
-        phoneNumber:
+        phone:
           type: string
-          example: '(+49) 0555 1234 1234'
+          example: "(+49) 0555 1234 1234"
         address:
-          $ref: '#/components/schemas/address'
+          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
       required:
         - firstName
         - lastName
         - email
-
-    update_attendee_dto:
-      type: object
-      properties:
-        _version:
-          $ref: '#/components/schemas/record_version'
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - _version
 
     # signup schemas
-    signup_billing_dto: 
-      type: object
-      properties:
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: Doe
-        email:
-          type: string
-          format: email
-          example: john.doe@example.com
-        phoneNumber:
-          type: string
-          example: '(+49) 0555 1234 1234'
-        note:
-          type: string
-        address:
-          $ref: '#/components/schemas/address'
-      required:
-        - firstName
-        - lastName
-        - email
-        - phoneNumber
-        - address
-
     signup_attendee_dto:
       type: object
       properties:
@@ -1626,36 +1417,36 @@ components:
           example: john.doe@example.com
         isBilledSeparately:
           type: boolean
-        phoneNumber:
+        phone:
           type: string
-          example: '(+49) 0555 1234 1234'
+          example: "(+49) 0555 1234 1234"
         address:
-          $ref: '#/components/schemas/address'
+          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
       required:
         - firstName
         - lastName
         - email
         - isBilledSeparately
 
-    submit_signup_dto:
+    signup_dto:
       type: object
       properties:
         courseId:
-          $ref: '#/components/schemas/course_id'
+          $ref: "#/components/schemas/course_id"
         acceptTerms:
           type: boolean
         billing:
-          $ref: '#/components/schemas/signup_billing_dto'
+          $ref: "#/components/schemas/billing"
         attendees:
           type: array
           items:
-            $ref: '#/components/schemas/signup_attendee_dto'
+            $ref: "#/components/schemas/signup_attendee_dto"
       required:
         - courseId
         - acceptTerms
         - billing
         - attendees
-            
+
     # response schemas
     paginated_registrations_response:
       type: object
@@ -1663,9 +1454,9 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/registration'
+            $ref: "#/components/schemas/registration"
         pagination:
-          $ref: '#/components/schemas/pagination'
+          $ref: "#/components/schemas/pagination"
       required:
         - items
         - pagination
@@ -1676,9 +1467,9 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/registration_comment'
+            $ref: "#/components/schemas/registration_comment"
         pagination:
-          $ref: '#/components/schemas/pagination'
+          $ref: "#/components/schemas/pagination"
       required:
         - items
         - pagination
@@ -1689,9 +1480,9 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/course'
+            $ref: "#/components/schemas/course"
         pagination:
-          $ref: '#/components/schemas/pagination'
+          $ref: "#/components/schemas/pagination"
       required:
         - items
         - pagination
@@ -1721,4 +1512,15 @@ components:
           example: true
         message:
           type: string
-          example: 'Dear attendee, your registration was accepted.'
+          example: "Dear attendee, your registration was accepted."
+
+
+    json_patch_dto:
+      type: object
+      properties:
+        _version:
+          $ref: "#/components/schemas/entity_version"
+        operations:
+          $ref: "https://openapi.storl.de/common/json-patch-1.0.0.yaml#/json_patch_document"
+      required:
+        - _version

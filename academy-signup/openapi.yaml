@@ -992,15 +992,21 @@ components:
       enum: ["seminar", "training_program"]
       example: seminar
 
+    counts_by_registration_status_item:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/registration_status"
+        count:
+          type: integer
+      required:
+          - status
+          - count
+
     counts_by_registration_status:
       type: array
       items:
-        type: object
-        properties:
-          status:
-            $ref: "#/components/schemas/registration_status"
-          count:
-            type: integer
+        $ref: '#/components/schemas/counts_by_registration_status_item'
 
     course_stats:
       type: object

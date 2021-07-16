@@ -1076,9 +1076,9 @@ components:
           type: string
           example: Catering
         price:
-          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/money"
+          $ref: "#/components/schemas/money"
         vatRate:
-          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/vat_rate"
+          $ref: "#/components/schemas/vat_rate"
       required:
         - id
         - _version
@@ -1093,9 +1093,9 @@ components:
           type: string
           example: Catering
         price:
-          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/money"
+          $ref: "#/components/schemas/money"
         vatRate:
-          $ref: "https://openapi.storl.de/common/money-1.0.0.yaml#/vat_rate"
+          $ref: "#/components/schemas/vat_rate"
       required:
         - name
         - price
@@ -1295,9 +1295,9 @@ components:
           type: string
           example: "1234 1234"
         addressee:
-          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/addressee"
+          $ref: "#/components/schemas/addressee"
         address:
-          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
+          $ref: "#/components/schemas/address"
       required:
         - email
         - phone
@@ -1369,7 +1369,7 @@ components:
           type: string
           example: "(+49) 0555 1234 1234"
         address:
-          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
+          $ref: "#/components/schemas/address"
       required:
         - id
         - _version
@@ -1395,7 +1395,7 @@ components:
           type: string
           example: "(+49) 0555 1234 1234"
         address:
-          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
+          $ref: "#/components/schemas/address"
       required:
         - firstName
         - lastName
@@ -1421,7 +1421,7 @@ components:
           type: string
           example: "(+49) 0555 1234 1234"
         address:
-          $ref: "https://openapi.storl.de/common/address-1.0.0.yaml#/address"
+          $ref: "#/components/schemas/address"
       required:
         - firstName
         - lastName
@@ -1521,6 +1521,149 @@ components:
         _version:
           $ref: "#/components/schemas/entity_version"
         operations:
-          $ref: "https://openapi.storl.de/common/json-patch-1.0.0.yaml#/json_patch_document"
+          $ref: "#/components/schemas/json_patch_document"
       required:
         - _version
+
+
+# external schemas
+    addressee:
+      description: a (natural or legal) person that gets addressed
+      type: object
+      properties:
+        salutation:
+          description: |
+            a salutation and/or title used for personal contacts to some
+            addressee; not to be confused with the gender information!
+          type: string
+          example: Mr
+        firstName:
+          description: |
+            given name(s) or first name(s) of a person; may also include the
+            middle names.
+          type: string
+          example: Hans Dieter
+        lastName:
+          description: |
+            family name(s) or surname(s) of a person
+          type: string
+          example: Mustermann
+        companyName:
+          description: |
+            company name of the business organization. Used when a business is
+            the actual addressee; for personal shipments to office addresses, use
+            `careOf` instead.
+          type: string
+          example: Consulting Services GmbH
+      required:
+        - firstName
+        - lastName
+
+    address:
+      description:
+        an address of a location/destination
+      type: object
+      properties:
+        careOf:
+          description: |
+            (aka c/o) the person that resides at the address, if different from
+            addressee. E.g. used when sending a personal parcel to the
+            office /someone else's home where the addressee resides temporarily
+          type: string
+          example: Consulting Services GmbH
+        line1:
+          description: |
+            usually the full street address including house number and street names.
+            Or
+          type: string
+          example: Schönhauser Allee 103
+        line2:
+          description: |
+            further details like building name, suite, apartment number, etc.
+          type: string
+          example: 2. Hinterhof rechts
+        city:
+          description: |
+            name of the city / locality
+          type: string
+          example: Berlin
+        zip:
+          description: |
+            zip code or postal code
+          type: string
+          example: 14265
+        state:
+          description: |
+            used for state/region/province depending on country
+          type: string
+          example: Brandenburg
+        country:
+          description: |
+            the country code according to
+            [iso-3166-1-alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+          type: string
+          example: DE
+      required:
+        - line1
+        - zip
+        - city
+        - country
+
+    money:
+      type: object
+      properties:
+        amount:
+          type: string
+          description: >
+            The amount describes unit and subunit of the currency in a single value,
+            where the integer part (digits before the decimal point) is for the
+            major unit and fractional part (digits after the decimal point) is for
+            the minor unit.
+          format: decimal
+          example: "99.95"
+        currency:
+          type: string
+          description: 3 letter currency code as defined by ISO-4217
+          format: iso-4217
+          example: EUR
+      required:
+        - amount
+        - currency
+
+    vat_rate:
+      description: >
+        vat rate
+      type: string
+      pattern: '^[0]?[.]\d{1,4}$'
+      example: "0.19"
+
+    json_patch_document:
+      description: A JSONPatch document as defined by RFC 6902
+      type: array
+      items:
+        $ref: "#/components/schemas/json_patch_operation"
+
+    json_patch_operation:
+      type: object
+      description: A single JSONPatch operation
+      required:
+        - "op"
+        - "path"
+      properties:
+        op:
+          type: string
+          description: The operation to be performed
+          enum:
+            - "add"
+            - "remove"
+            - "replace"
+            - "move"
+            - "copy"
+            - "test"
+        path:
+          type: string
+          description: A JSON-Pointer
+        value: {}
+        from:
+          type: string
+          description: A string containing a JSON Pointer value.

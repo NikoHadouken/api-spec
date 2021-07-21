@@ -279,6 +279,84 @@ paths:
         "404":
           $ref: "#/components/responses/error_not_found"
 
+  /courses/{courseId}/groups:
+    parameters:
+      - in: path
+        name: courseId
+        schema:
+          $ref: '#/components/schemas/course_id'
+        required: true
+        description: Id of the course
+    get:
+      summary: get attendee groups
+      description: Get a list of attendee groups of a course
+      operationId: get_attendee_groups
+      tags:
+        - course
+      responses:
+        "200":
+          $ref: "#/components/responses/attendee_group_list"
+    post:
+      summary: create attendee group
+      description: Create a new attendee group for a course
+      operationId: create_attendee_group
+      tags:
+        - course
+      requestBody:
+        description: fields for a new attendee group
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/create_attendee_group_dto"
+      responses:
+        "201":
+          $ref: "#/components/responses/attendee_group"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
+    
+  /courses/{courseId}/groups/{groupId}:
+    parameters:
+      - in: path
+        name: courseId
+        schema:
+          $ref: "#/components/schemas/course_id"
+        required: true
+        description: Id of the course
+      - in: path
+        name: groupId
+        schema:
+          $ref: "#/components/schemas/entity_id"
+        required: true
+        description: Id of the attendee group
+    patch:
+      summary: update an attendee group
+      description: Updates an attendee group
+      operationId: update_attendee_group
+      tags:
+        - course
+      requestBody:
+        $ref: "#/components/requestBodies/json_patch"
+      responses:
+        "200":
+          $ref: "#/components/responses/attendee_group"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+        "412":
+          $ref: "#/components/responses/error_concurrency"
+        "422":
+          $ref: "#/components/responses/error_validation_failed"
+    delete:
+      summary: permanently delete an attendee group
+      description: Permanently delete an attendee group
+      operationId: delete_attendee_group
+      tags:
+        - course
+      responses:
+        "200":
+          $ref: "#/components/responses/attendee_group"
+        "404":
+          $ref: "#/components/responses/error_not_found"
+
   # registration paths
   /registrations:
     get:
@@ -873,6 +951,22 @@ components:
             items:
               $ref: "#/components/schemas/attendee"
 
+    attendee_group:
+      description: single attendee group
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/attendee_group"
+
+    attendee_group_list:
+      description: list of attendee groups
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/attendee_group"
+
     course_stats:
       description: stats for course
       content:
@@ -956,7 +1050,7 @@ components:
                 example: "isEnum"
               message:
                 type: string
-                example: 'value "Deutschland" is not a valid country code'
+                example: value "Deutschland" is not a valid country code
             required:
               - type
               - message
@@ -992,7 +1086,7 @@ components:
       enum: ["seminar", "training_program"]
       example: seminar
 
-    counts_by_registration_status_item:
+    counts_by_registration_status:
       type: object
       properties:
         status:
@@ -1002,11 +1096,6 @@ components:
       required:
           - status
           - count
-
-    counts_by_registration_status:
-      type: array
-      items:
-        $ref: '#/components/schemas/counts_by_registration_status_item'
 
     course_stats:
       type: object
@@ -1034,7 +1123,9 @@ components:
         total:
           type: integer
         byStatus:
-          $ref: "#/components/schemas/counts_by_registration_status"
+          type: array
+          items:
+            $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - courseId
         - limit
@@ -1050,7 +1141,9 @@ components:
         total:
           type: integer
         byStatus:
-          $ref: "#/components/schemas/counts_by_registration_status"
+          type: array
+          items:
+            $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - courseId
         - total
@@ -1062,7 +1155,9 @@ components:
         total:
           type: integer
         byStatus:
-          $ref: "#/components/schemas/counts_by_registration_status"
+          type: array
+          items:
+            $ref: "#/components/schemas/counts_by_registration_status"
       required:
         - total
         - byStatus
@@ -1177,6 +1272,39 @@ components:
         - attendeeCapacity
         - startingDate
 
+    attendee_group:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/entity_id'
+        courseId:
+          $ref: '#/components/schemas/course_id'
+        name:
+          type: string
+          example: Foobar
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/attendee'
+      required:
+        - id
+        - courseId
+        - name
+        - attendees
+
+    create_attendee_group_dto:
+      type: object
+      properties:
+        courseId:
+          $ref: '#/components/schemas/course_id'
+        name:
+          type: string
+          example: Foobar
+      required:
+        - id
+        - name
+
+
     # registration schemas
     registration_id:
       type: integer
@@ -1282,7 +1410,7 @@ components:
         attendees:
           type: array
           items:
-            $ref: '#/components/schemas/create_attendee_dto'
+            $ref: "#/components/schemas/create_attendee_dto"
       required:
         - courseId
         - billing
@@ -1374,6 +1502,8 @@ components:
         phone:
           type: string
           example: "(+49) 0555 1234 1234"
+        note:
+          type: string
         address:
           $ref: "#/components/schemas/address"
       required:
@@ -1400,6 +1530,8 @@ components:
         phone:
           type: string
           example: "(+49) 0555 1234 1234"
+        note:
+          type: string
         address:
           $ref: "#/components/schemas/address"
       required:
@@ -1640,7 +1772,7 @@ components:
       description: >
         vat rate
       type: string
-      pattern: '^[0]?[.]\d{1,4}$'
+      pattern: ^[0]?[.]\d{1,4}$
       example: "0.19"
 
     json_patch_document:
